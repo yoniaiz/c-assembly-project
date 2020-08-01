@@ -11,9 +11,9 @@ extern operation operations[OPERATIONS_LENGTH];
 static operation create_op(int code, int funct, char *name)
 {
     operation new_operation;
-    new_operation.op_code = code;
+    new_operation.opcode = code;
     new_operation.funct = funct;
-    strcpy(new_operation.op_name, name);
+    strcpy(new_operation.opname, name);
     return new_operation;
 }
 
@@ -57,4 +57,40 @@ void initialize_prog()
 {
     initialize_registers();
     initialize_operations();
+}
+
+int decimal_to_binary_unassigned_base_2(int num)
+{
+    int n;
+    int bits[MAX_BIT_SIZE] = {0}, i = 0, isnegative = num < 0 ? TRUE : FALSE;
+    int first_one = FALSE;
+
+    num = abs(num);
+    for (i = 0; num > 0; i++)
+    {
+        bits[i] = num % 2;
+        num = num / 2;
+    }
+
+    if (isnegative)
+    {
+        for (i = 0; i < MAX_BIT_SIZE; i++)
+        {
+            if (bits[i] == 1 && !first_one)
+            {
+                first_one = TRUE;
+                continue;
+            }
+            if (first_one)
+                bits[i] = bits[i] == 1 ? 0 : 1;
+        }
+    }
+
+    for (i = 0; i < MAX_BIT_SIZE; i++)
+    {
+        printf("%d , ", bits[i]);
+        n += bits[i] * pow(2, i);
+    }
+
+    return n;
 }

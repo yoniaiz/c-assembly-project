@@ -13,6 +13,9 @@ operation operations[OPERATIONS_LENGTH];
 
 int main(int argc, char *argv[])
 {
-    initialize_prog();  
+    word wr;
+    wr.address = decimal_to_binary_unassigned_base_2(-20);
+    printf("%d", wr.address);
+    initialize_prog();
     return 1;
 }
