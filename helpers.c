@@ -35,6 +35,7 @@ static void initialize_registers()
 
 static void initialize_operations()
 {
+    /* creating the operations table */
     operations[0] = create_op(0, 0, MOV);
     operations[1] = create_op(1, 0, CMP);
     operations[2] = create_op(2, 1, ADD);
@@ -61,36 +62,46 @@ void initialize_prog()
 
 int decimal_to_binary_unassigned_base_2(int num)
 {
-    int n;
-    int bits[MAX_BIT_SIZE] = {0}, i = 0, isnegative = num < 0 ? TRUE : FALSE;
+    int converted_number, i = 0;
+    int bits[MAX_BIT_SIZE] = {0}, isnegative = num < 0 ? TRUE : FALSE;
     int first_one = FALSE;
-
-    num = abs(num);
-    for (i = 0; num > 0; i++)
-    {
-        bits[i] = num % 2;
-        num = num / 2;
-    }
 
     if (isnegative)
     {
+        /* convert number from base decimal to base to in array form */
+        num = abs(num);
+        for (i = 0; num > 0; i++)
+        {
+            bits[i] = num % 2;
+            num = num / 2;
+        }
+
+        /* if the original number was negative then change it in complement to 2 shotcut */
         for (i = 0; i < MAX_BIT_SIZE; i++)
         {
             if (bits[i] == 1 && !first_one)
             {
+                /* keep array the same to the first "one" */
                 first_one = TRUE;
                 continue;
             }
+            /* change all bits to the complement */
             if (first_one)
                 bits[i] = bits[i] == 1 ? 0 : 1;
         }
-    }
 
-    for (i = 0; i < MAX_BIT_SIZE; i++)
+        for (i = 0; i < MAX_BIT_SIZE; i++)
+        {
+            /* convert back to number */
+            printf("%d , ", bits[i]);
+            converted_number += bits[i] * pow(2, i);
+        }
+    }
+    else
     {
-        printf("%d , ", bits[i]);
-        n += bits[i] * pow(2, i);
+        /* if number is not negative no need to manupulate */
+        return num;
     }
 
-    return n;
+    return converted_number;
 }

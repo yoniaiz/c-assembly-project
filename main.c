@@ -13,9 +13,15 @@ operation operations[OPERATIONS_LENGTH];
 
 int main(int argc, char *argv[])
 {
-    word wr;
-    wr.address = decimal_to_binary_unassigned_base_2(-20);
-    printf("%d", wr.address);
+    char *content = 0;
+
+    if(argc == 1)
+    {
+        printf("Please provide assembly file path!\n");
+        exit(EXIT_FAILURE);
+    }
     initialize_prog();
+    read_file(argv[1], &content);
+    free(content);
     return 1;
 }

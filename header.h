@@ -67,7 +67,7 @@ typedef struct word
     unsigned int e : 1;
     unsigned int r : 1;
     unsigned int a : 1;
-    unsigned int address: 21;
+    unsigned int address : 21;
 } word;
 
 typedef struct compled_operation_struct
@@ -76,7 +76,6 @@ typedef struct compled_operation_struct
     word dest_word;
     word origin_word;
 } compled_operation_struct;
-
 
 /* operatios structor */
 typedef struct op
@@ -93,6 +92,6 @@ typedef struct st
     unsigned int value : MAX_BIT_SIZE;
 } register_st;
 
-
 int decimal_to_binary_unassigned_base_2(int decimalnum);
+void read_file(char *path, char **content);
 void initialize_prog();
