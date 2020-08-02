@@ -62,20 +62,13 @@ typedef struct wr
     unsigned int extra_origin_a : 1;
 } main_parsed_word;
 
-typedef struct word
+typedef struct input_struct
 {
-    unsigned int e : 1;
-    unsigned int r : 1;
-    unsigned int a : 1;
-    unsigned int address : 21;
-} word;
-
-typedef struct compled_operation_struct
-{
-    main_parsed_word main_word;
-    word dest_word;
-    word origin_word;
-} compled_operation_struct;
+    char *label;
+    char *operation;
+    char *var1;
+    char *var2;
+} input_destructor;
 
 /* operatios structor */
 typedef struct op
@@ -92,6 +85,15 @@ typedef struct st
     unsigned int value : MAX_BIT_SIZE;
 } register_st;
 
+/* Helpers */
 int decimal_to_binary_unassigned_base_2(int decimalnum);
+void split_input_by_enters_and_remove_spaces(char *str, char **res);
+/* FILE HANDLER */
 void read_file(char *path, char **content);
+void parse_input(char *filestring, input_destructor **commands);
+/* INITIALIZERS */
 void initialize_prog();
+/* Messages */
+void memory_allocation_fail();
+void file_fail();
+void no_args_fail();
