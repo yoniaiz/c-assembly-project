@@ -87,10 +87,9 @@ typedef struct st
 
 /* Helpers */
 int decimal_to_binary_unassigned_base_2(int decimalnum);
-void split_input_by_enters_and_remove_spaces(char *str, char **res);
+void split_input_by_enters_and_remove_spaces(char *str, char ***lines);
 /* FILE HANDLER */
-void read_file(char *path, char **content);
-void parse_input(char *filestring, input_destructor **commands);
+void parse_file_to_array_of_strings(char *path, char ***lines);
 /* INITIALIZERS */
 void initialize_prog();
 /* Messages */

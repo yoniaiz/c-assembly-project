@@ -26,15 +26,9 @@ void read_file(char *path, char **content)
     fclose(assembly);
 }
 
-void parse_input(char *filestring, input_destructor **commands)
+void parse_file_to_array_of_strings(char *path, char ***lines)
 {
-    int i;
-    char **res = NULL;
-    input_destructor *arr;
-    int columnlen = 0;
-    split_input_by_enters_and_remove_spaces(filestring, res);
-    
- 
-
-    free(res);
+    char *content = 0;
+    read_file(path, &content);
+    split_input_by_enters_and_remove_spaces(content, lines);
 }

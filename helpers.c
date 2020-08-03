@@ -16,7 +16,6 @@ void remove_spaces(char *str_with_spaces)
     {
         memory_allocation_fail();
     }
-
     while (*(str_with_spaces + i))
     {
         /* remove all white spaces from the string */
@@ -33,35 +32,34 @@ void remove_spaces(char *str_with_spaces)
     strcpy(str_with_spaces, str_without_spaces);
 }
 
-void split_input_by_enters_and_remove_spaces(char *str, char **res)
+void split_input_by_enters_and_remove_spaces(char *str, char ***lines)
 {
-    char *p = strtok(str, "\n");
+    char *token = strtok(str, "\n");
     int n_spaces = 0, i;
 
     /* split string and append tokens to 'res' */
-
-    while (p)
+    while (token)
     {
-        res = realloc(res, sizeof(char *) * ++n_spaces);
+        *lines = realloc(*lines, sizeof(char *) * ++n_spaces);
 
-        if (res == NULL)
-            exit(-1); /* memory allocation failed */
+        if (!lines)
+            memory_allocation_fail();
 
-        res[n_spaces - 1] = p;
+        (*lines)[n_spaces - 1] = token;
 
-        p = strtok(NULL, "\n");
+        token = strtok(NULL, "\n");
     }
 
     /* realloc one extra element for the last NULL */
-    res = realloc(res, sizeof(char *) * (n_spaces + 1));
-    res[n_spaces] = 0;
+    *lines = realloc(*lines, sizeof(char *) * (n_spaces + 1));
+    (*lines)[n_spaces] = 0;
 
-    for (i = 0; i < (n_spaces + 1); ++i)
+    for (i = 0; i < n_spaces; i++)
     {
         /* remove spaces from all array items */
-        if (res[i])
+        if ((*lines)[i])
         {
-            remove_spaces(res[i]);
+            remove_spaces((*lines)[i]);
         }
     }
 }

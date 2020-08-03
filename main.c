@@ -11,9 +11,7 @@ operation operations[OPERATIONS_LENGTH];
 
 int main(int argc, char *argv[])
 {
-    int i;
-    char *content = 0;
-    input_destructor *commands = NULL;
+    char **lines = NULL;
 
     if (argc == 1)
     {
@@ -21,8 +19,7 @@ int main(int argc, char *argv[])
     }
 
     initialize_prog();
-    read_file(argv[1], &content);
-    parse_input(content, &commands);
+    parse_file_to_array_of_strings(argv[1], &lines);
 
     return 1;
 }
