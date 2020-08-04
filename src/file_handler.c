@@ -26,6 +26,7 @@ void read_file(char *path, char **content)
     fclose(assembly);
 }
 
+/* read the file into a string and split it by enters to create a array of strings without spacess */
 void parse_file_to_array_of_strings(char *path, char ***lines)
 {
     char *content = 0;

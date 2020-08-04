@@ -35,11 +35,19 @@
 /* all assembly commands */
 
 /*addressing types*/
-#define IMMEDIATE_ADDRESSING 0
-#define DIRECT_ADDRESSING 1
-#define RELATIVE_ADDRESSING 2
-#define IMMEDIATE_REGISTER_ADDRESSING 3
+typedef enum
+{
+    IMMEDIATE_ADDRESSING,
+    DIRECT_ADDRESSING,
+    RELATIVE_ADDRESSING,
+    IMMEDIATE_REGISTER_ADDRESSING
+} ADDRESSINGS;
 
+typedef enum
+{
+    CREATE,
+    EXECUTE
+} COMMAND_TYPE;
 /* cpu word structer */
 typedef struct wr
 {
@@ -52,23 +60,16 @@ typedef struct wr
     unsigned int origin_register : 3;
     unsigned int origin_addressing : 2;
     unsigned int opcode : 6;
-    unsigned int extra_dest_data : 21;
-    unsigned int extra_dest_e : 1;
-    unsigned int extra_dest_r : 1;
-    unsigned int extra_dest_a : 1;
-    unsigned int extra_origin_data : 21;
-    unsigned int extra_origin_e : 1;
-    unsigned int extra_origin_r : 1;
-    unsigned int extra_origin_a : 1;
-} main_parsed_word;
+} word;
 
-typedef struct input_struct
+typedef struct commands_struct
 {
+    COMMAND_TYPE command_type;
     char *label;
     char *operation;
     char *var1;
     char *var2;
-} input_destructor;
+} commands;
 
 /* operatios structor */
 typedef struct op
@@ -96,3 +97,5 @@ void initialize_prog();
 void memory_allocation_fail();
 void file_fail();
 void no_args_fail();
+/* Assembly compiler */
+void complie_file_input_to_assembly(char **lines);
