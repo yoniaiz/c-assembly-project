@@ -1,9 +1,108 @@
 #include "header.h"
 
-/* operetions memory */
-extern int ic;
-/* data memory */
-extern int dc;
+extern operation operations[OPERATIONS_LENGTH];
+
+char *get_label(char *str, int *index)
+{
+    char *label = NULL;
+
+    while (str[*index] && str[*index] != ':' && *index != 31)
+    {
+        label = realloc(label, sizeof(char) * (*index));
+        if (!label)
+            memory_allocation_fail();
+
+        label[*index] = str[*index];
+        (*index)++;
+    }
+
+    if (str[*index] != ':' || *index == 31)
+    {
+        free(label);
+    }
+    else
+    {
+        /* last string char 0 */
+        label = realloc(label, sizeof(char) * (*index));
+        if (!label)
+            memory_allocation_fail();
+
+        label[*index] = 0;
+    }
+
+    return label;
+}
+
+static int get_operation_from_operations(char *opname)
+{
+    int i;
+    for (i = 0; i < OPERATIONS_LENGTH; i++)
+    {
+        if (comp_strings(operations[i].opname, opname))
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+static int is_valid_instraction(char *str)
+{
+    return comp_strings(str, DATA) || comp_strings(str, STRING) || comp_strings(str, EXTERN) || comp_strings(str, ENTRY);
+}
+
+void get_operation(char *str, int *index, commands *cmd)
+{
+    char *opname = NULL;
+    int opindex, i = 0;
+
+    if (str[*index] == '.')
+    {
+        printf("seach for int \n");
+        while (str[*index])
+        {
+            opname = realloc(opname, sizeof(char) * i);
+            if (!opname)
+                memory_allocation_fail();
+
+            if (is_valid_instraction(opname))
+            {
+                cmd->instruction = (char *)malloc(sizeof(char) * i);
+                cmd->command_type = INSTRACTION;
+                break;
+            }
+
+            (*index)++;
+            i++;
+        }
+    }
+    else
+    {
+        while (str[*index])
+        {
+            opname = realloc(opname, sizeof(char) * i);
+            if (!opname)
+                memory_allocation_fail();
+
+            opname[i] = str[*index];
+            opindex = get_operation_from_operations(opname);
+            if (opindex > -1)
+            {
+                /* found operation update in command and status */
+                strcpy(cmd->op.opname,operations[opindex].opname);
+                cmd->op.funct = operations[opindex].funct;
+                cmd->op.opcode = operations[opindex].opcode;
+
+                cmd->command_type = EXECUTE;
+                break;
+            }
+
+            (*index)++;
+            i++;
+        }
+    }
+}
 
 void remove_spaces(char *str_with_spaces)
 {
@@ -26,8 +125,8 @@ void remove_spaces(char *str_with_spaces)
         }
         i++;
     }
-
-    *(str_without_spaces + j) = '\0';
+    /* last string char 0 */
+    *(str_without_spaces + j) = 0;
     /* update string after removing spaces */
     strcpy(str_with_spaces, str_without_spaces);
 }

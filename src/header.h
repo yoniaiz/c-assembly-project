@@ -33,6 +33,11 @@
 #define RTS "rts"
 #define STOP "stop"
 /* all assembly commands */
+/* instraction types */
+#define DATA ".data"
+#define STRING ".string"
+#define EXTERN ".extern"
+#define ENTRY ".entry"
 
 /*addressing types*/
 typedef enum
@@ -45,9 +50,10 @@ typedef enum
 
 typedef enum
 {
-    CREATE,
+    INSTRACTION,
     EXECUTE
 } COMMAND_TYPE;
+
 /* cpu word structer */
 typedef struct wr
 {
@@ -62,22 +68,23 @@ typedef struct wr
     unsigned int opcode : 6;
 } word;
 
-typedef struct commands_struct
-{
-    COMMAND_TYPE command_type;
-    char *label;
-    char *operation;
-    char *var1;
-    char *var2;
-} commands;
-
-/* operatios structor */
 typedef struct op
 {
     int opcode;
     int funct;
     char opname[10];
 } operation;
+typedef struct commands_struct
+{
+    COMMAND_TYPE command_type;
+    char *label;
+    operation op;
+    char *instruction;
+    char *var1;
+    char *var2;
+} commands;
+
+/* operatios structor */
 
 /* register structor*/
 typedef struct st
@@ -89,6 +96,8 @@ typedef struct st
 /* Helpers */
 int decimal_to_binary_unassigned_base_2(int decimalnum);
 void split_input_by_enters_and_remove_spaces(char *str, char ***lines);
+char *get_label(char *str, int *index);
+void get_operation(char *str, int *index, commands *cmd);
 /* FILE HANDLER */
 void parse_file_to_array_of_strings(char *path, char ***lines);
 /* INITIALIZERS */
