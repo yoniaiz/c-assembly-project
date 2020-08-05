@@ -68,17 +68,20 @@ typedef struct wr
     unsigned int opcode : 6;
 } word;
 
+/* assembly basic operation with funct and code */
 typedef struct op
 {
     int opcode;
     int funct;
     char *opname;
 } operation;
+
+/* command after parsing the file */
 typedef struct commands_struct
 {
     COMMAND_TYPE command_type;
-    char *label;
     operation op;
+    char *label;
     char *instruction;
     char *var1;
     char *var2;
