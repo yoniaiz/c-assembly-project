@@ -72,7 +72,7 @@ typedef struct op
 {
     int opcode;
     int funct;
-    char opname[10];
+    char *opname;
 } operation;
 typedef struct commands_struct
 {

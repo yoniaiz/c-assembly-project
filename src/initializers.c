@@ -9,6 +9,10 @@ static operation create_op(int code, int funct, char *name)
     operation new_operation;
     new_operation.opcode = code;
     new_operation.funct = funct;
+    new_operation.opname = (char *)malloc(sizeof(char) * strlen(name));
+    if(!new_operation.opname)
+        memory_allocation_fail();
+        
     strcpy(new_operation.opname, name);
     return new_operation;
 }

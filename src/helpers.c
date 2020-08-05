@@ -38,10 +38,9 @@ static int get_operation_from_operations(char *opname)
     int i;
     for (i = 0; i < OPERATIONS_LENGTH; i++)
     {
+
         if (comp_strings(operations[i].opname, opname))
-        {
             return i;
-        }
     }
 
     return -1;
@@ -55,53 +54,49 @@ static int is_valid_instraction(char *str)
 void get_operation(char *str, int *index, commands *cmd)
 {
     char *opname = NULL;
-    int opindex, i = 0;
+    int opindex, i = 1;
+    int isInstruction = str[*index] == '.';
 
-    if (str[*index] == '.')
+    while (str[*index])
     {
-        printf("seach for int \n");
-        while (str[*index])
+        opname = realloc(opname, sizeof(char) * i);
+        if (!opname)
+            memory_allocation_fail();
+
+        opname[i - 1] = str[*index];
+        opname[i] = 0;
+
+        if (isInstruction && is_valid_instraction(opname))
         {
-            opname = realloc(opname, sizeof(char) * i);
-            if (!opname)
+            cmd->instruction = (char *)malloc(sizeof(char) * i);
+            if (!cmd->instruction)
                 memory_allocation_fail();
 
-            if (is_valid_instraction(opname))
-            {
-                cmd->instruction = (char *)malloc(sizeof(char) * i);
-                cmd->command_type = INSTRACTION;
-                break;
-            }
-
-            (*index)++;
-            i++;
+            strcpy(cmd->instruction, opname);
+            cmd->command_type = INSTRACTION;
+            break;
         }
-    }
-    else
-    {
-        while (str[*index])
+        else
         {
-            opname = realloc(opname, sizeof(char) * i);
-            if (!opname)
-                memory_allocation_fail();
-
-            opname[i] = str[*index];
             opindex = get_operation_from_operations(opname);
             if (opindex > -1)
             {
+                cmd->op.opname = (char *)malloc(sizeof(char) * i);
                 /* found operation update in command and status */
-                strcpy(cmd->op.opname,operations[opindex].opname);
+                strcpy(cmd->op.opname, operations[opindex].opname);
                 cmd->op.funct = operations[opindex].funct;
                 cmd->op.opcode = operations[opindex].opcode;
 
                 cmd->command_type = EXECUTE;
                 break;
             }
-
-            (*index)++;
-            i++;
         }
+
+        (*index)++;
+        i++;
     }
+
+    free(opname);
 }
 
 void remove_spaces(char *str_with_spaces)
