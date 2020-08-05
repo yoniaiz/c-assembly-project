@@ -13,8 +13,8 @@
 #define DC_INIT 0
 
 /* macros */
-#define comp_strings(X, Y) (strcmp(X, Y) == 0 ? TRUE : FALSE)
-
+#define COMP_SIZE(X, Y) (strcmp(X, Y) == 0 ? TRUE : FALSE)
+#define MATRIX_SIZE(a) (sizeof(a) / sizeof(a[0]))
 /* all assembly commands */
 #define MOV "mov"
 #define CMP "cmp"

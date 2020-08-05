@@ -8,7 +8,7 @@ static int get_operation_from_operations(char *opname)
     /* return operation index by comparing strings */
     int i;
     for (i = 0; i < OPERATIONS_LENGTH; i++)
-        if (comp_strings(operations[i].opname, opname))
+        if (COMP_SIZE(operations[i].opname, opname))
             return i;
 
     return -1;
@@ -21,7 +21,7 @@ char *get_label(char *str, int *index)
     while (str[*index] && str[*index] != ':' && *index != MAX_LABEL_LENGTH)
     {
         /* copy characters to and of str or char = ":" (and of label) of index = 31 (max char length) */
-        label = realloc(label, sizeof(char) * (*index));
+        label = realloc(label, sizeof(char) * ((*index) + 1));
         if (!label)
             memory_allocation_fail();
 
@@ -37,7 +37,7 @@ char *get_label(char *str, int *index)
     else
     {
         /* last string char 0 */
-        label = realloc(label, sizeof(char) * (*index));
+        label = realloc(label, sizeof(char) * (*index + 1));
         if (!label)
             memory_allocation_fail();
 
@@ -49,7 +49,7 @@ char *get_label(char *str, int *index)
 
 static int is_valid_instraction(char *str)
 {
-    return comp_strings(str, DATA) || comp_strings(str, STRING) || comp_strings(str, EXTERN) || comp_strings(str, ENTRY);
+    return COMP_SIZE(str, DATA) || COMP_SIZE(str, STRING) || COMP_SIZE(str, EXTERN) || COMP_SIZE(str, ENTRY);
 }
 
 void get_command(char *str, int *index, commands *cmd)
@@ -114,7 +114,7 @@ char *get_variable(char *str, int *index, int first_var)
         /* iterate on str until: if its first var and found ',' or until and of string */
         if (first_var && str[*index] == ',')
         {
-            *index++;
+            (*index)++;
             return var;
         }
         var = realloc(var, sizeof(char) * i);

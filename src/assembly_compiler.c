@@ -14,11 +14,10 @@ static commands extract_command_data(char *str)
 
     /* get label if exist from string and add to struct*/
     strcpy(label, get_label(str, &index));
-
     if (strlen(label))
     {
         index++;
-        command.label = (char *)malloc(sizeof(char) * strlen(label));
+        command.label = (char *)malloc(sizeof(char) * index);
         strcpy(command.label, label);
     }
     else
@@ -41,8 +40,6 @@ static commands extract_command_data(char *str)
         memory_allocation_fail();
 
     strcpy(command.var1, get_variable(str, &index, TRUE));
-    /* if not in the end of the string skip the ',' separetor */
-    index += index < (strLen - 1);
 
     if (index < (strLen - 1))
     {
@@ -54,23 +51,28 @@ static commands extract_command_data(char *str)
         strcpy(command.var2, get_variable(str, &index, FALSE));
     }
 
-    printf("LABEL = %s \t TYPE = %d \n", command.label, command.command_type);
-    printf("CMD = %s \t instruction = %s \n", command.op.opname, command.instruction);
-    printf("VAR1 = %s \t VAR2 = %s \n", command.var1, command.var2);
-
     return command;
 }
 
 void complie_file_input_to_assembly(char **lines)
 {
     int i = 0;
-    commands cmd[15];
+    commands *cmd = NULL;
 
     while (lines[i])
     {
+        cmd = (commands *)realloc(cmd, sizeof(commands) * (i + 1));
+        if (!cmd)
+        {
+            memory_allocation_fail();
+        }
         cmd[i] = extract_command_data(lines[i]);
         i++;
     }
 
+    for (i = 0; lines[i]; i++)
+    {
+        printf("%d %s %s %s\n", cmd[i].command_type, cmd[i].label, cmd[i].op.opname, cmd[i].instruction);
+    }
     free(lines);
 }
