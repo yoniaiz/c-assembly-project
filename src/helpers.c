@@ -99,6 +99,31 @@ void get_operation(char *str, int *index, commands *cmd)
     free(opname);
 }
 
+char *get_variable(char *str, int *index, int first_var)
+{
+    char *var = NULL;
+    int i = 1;
+    while (str[*index])
+    {
+        if (first_var && str[*index] == ',')
+        {
+            *index++;
+            return var;
+        }
+        var = realloc(var, sizeof(char) * i);
+        if (!var)
+            memory_allocation_fail();
+
+        var[i - 1] = str[*index];
+        var[i] = 0;
+
+        (*index)++;
+        i++;
+    }
+
+    return var;
+}
+
 void remove_spaces(char *str_with_spaces)
 {
     int length, i = 0, j = 0;

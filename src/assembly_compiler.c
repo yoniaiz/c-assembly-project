@@ -3,15 +3,17 @@
 static commands extract_command_data(char *str)
 {
     commands command;
-    int index = 0;
-    int strLength = strlen(str);
-    char *var1, *var2;
+    int index = 0, strLen = strlen(str);
+    char *label = (char *)malloc(sizeof(char) * strLen);
+
     command.instruction = NULL;
     command.op.opname = NULL;
+    command.var1 = NULL;
+    command.var2 = NULL;
+
     /* get label if exist from string and add to struct*/
-    char *label = (char *)malloc(sizeof(char) * strLength);
     strcpy(label, get_label(str, &index));
-    
+
     if (strlen(label))
     {
         index++;
@@ -26,16 +28,27 @@ static commands extract_command_data(char *str)
     free(label);
     /* get operation if exist from string and add to struct from last index */
     get_operation(str, &index, &command);
+    index += index < (strLen - 1);
 
-    printf("label = %s\n", command.label);
-    if (command.op.opname)
+    command.var1 = (char *)malloc(sizeof(char) * (strLen - index));
+    if (!command.var1)
+        memory_allocation_fail();
+
+    strcpy(command.var1, get_variable(str, &index, TRUE));
+    index += index < (strLen - 1);
+
+    if (index < (strLen - 1))
     {
-        printf("opname = %s\n", command.op.opname);
+        command.var2 = (char *)malloc(sizeof(char) * (strLen - index));
+        if (!command.var2)
+            memory_allocation_fail();
+
+        strcpy(command.var2, get_variable(str, &index, FALSE));
     }
-    else if (command.instruction)
-    {
-        printf("instruction = %s\n", command.instruction);
-    }
+
+    printf("LABEL = %s \t TYPE = %d \n", command.label, command.command_type);
+    printf("CMD = %s \t instruction = %s \n", command.op.opname, command.instruction);
+    printf("VAR1 = %s \t VAR2 = %s \n", command.var1, command.var2);
 
     return command;
 }
