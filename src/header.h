@@ -97,15 +97,19 @@ typedef struct st
 int decimal_to_binary_unassigned_base_2(int decimalnum);
 void split_input_by_enters_and_remove_spaces(char *str, char ***lines);
 char *get_label(char *str, int *index);
-void get_operation(char *str, int *index, commands *cmd);
+void get_command(char *str, int *index, commands *cmd);
 char *get_variable(char *str, int *index, int first_var);
+
 /* FILE HANDLER */
 void parse_file_to_array_of_strings(char *path, char ***lines);
+
 /* INITIALIZERS */
 void initialize_prog();
+
 /* Messages */
 void memory_allocation_fail();
 void file_fail();
 void no_args_fail();
+
 /* Assembly compiler */
 void complie_file_input_to_assembly(char **lines);

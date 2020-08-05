@@ -1,13 +1,26 @@
 #include "header.h"
+#define MAX_LABEL_LENGTH 31
 
 extern operation operations[OPERATIONS_LENGTH];
+
+static int get_operation_from_operations(char *opname)
+{
+    /* return operation index by comparing strings */
+    int i;
+    for (i = 0; i < OPERATIONS_LENGTH; i++)
+        if (comp_strings(operations[i].opname, opname))
+            return i;
+
+    return -1;
+}
 
 char *get_label(char *str, int *index)
 {
     char *label = NULL;
 
-    while (str[*index] && str[*index] != ':' && *index != 31)
+    while (str[*index] && str[*index] != ':' && *index != MAX_LABEL_LENGTH)
     {
+        /* copy characters to and of str or char = ":" (and of label) of index = 31 (max char length) */
         label = realloc(label, sizeof(char) * (*index));
         if (!label)
             memory_allocation_fail();
@@ -16,8 +29,9 @@ char *get_label(char *str, int *index)
         (*index)++;
     }
 
-    if (str[*index] != ':' || *index == 31)
+    if (str[*index] != ':' || *index == MAX_LABEL_LENGTH)
     {
+        /* label not found free space */
         free(label);
     }
     else
@@ -33,32 +47,21 @@ char *get_label(char *str, int *index)
     return label;
 }
 
-static int get_operation_from_operations(char *opname)
-{
-    int i;
-    for (i = 0; i < OPERATIONS_LENGTH; i++)
-    {
-
-        if (comp_strings(operations[i].opname, opname))
-            return i;
-    }
-
-    return -1;
-}
-
 static int is_valid_instraction(char *str)
 {
     return comp_strings(str, DATA) || comp_strings(str, STRING) || comp_strings(str, EXTERN) || comp_strings(str, ENTRY);
 }
 
-void get_operation(char *str, int *index, commands *cmd)
+void get_command(char *str, int *index, commands *cmd)
 {
     char *opname = NULL;
     int opindex, i = 1;
+    /* check if the command starts with '.' to know its an instruction */
     int isInstruction = str[*index] == '.';
 
     while (str[*index])
     {
+        /* read all laters and allocate dynamicly space untill or instruction is found or assembly operations */
         opname = realloc(opname, sizeof(char) * i);
         if (!opname)
             memory_allocation_fail();
@@ -68,6 +71,7 @@ void get_operation(char *str, int *index, commands *cmd)
 
         if (isInstruction && is_valid_instraction(opname))
         {
+            /* instoction found. assign to object and set object type to INSTRACTION  */
             cmd->instruction = (char *)malloc(sizeof(char) * i);
             if (!cmd->instruction)
                 memory_allocation_fail();
@@ -81,12 +85,14 @@ void get_operation(char *str, int *index, commands *cmd)
             opindex = get_operation_from_operations(opname);
             if (opindex > -1)
             {
+                /* operation found. assign to object and set object type to EXECUTE  */
                 cmd->op.opname = (char *)malloc(sizeof(char) * i);
-                /* found operation update in command and status */
+                if (!cmd->op.opname)
+                    memory_allocation_fail();
+
                 strcpy(cmd->op.opname, operations[opindex].opname);
                 cmd->op.funct = operations[opindex].funct;
                 cmd->op.opcode = operations[opindex].opcode;
-
                 cmd->command_type = EXECUTE;
                 break;
             }
@@ -105,6 +111,7 @@ char *get_variable(char *str, int *index, int first_var)
     int i = 1;
     while (str[*index])
     {
+        /* iterate on str until: if its first var and found ',' or until and of string */
         if (first_var && str[*index] == ',')
         {
             *index++;

@@ -6,6 +6,7 @@ static commands extract_command_data(char *str)
     int index = 0, strLen = strlen(str);
     char *label = (char *)malloc(sizeof(char) * strLen);
 
+    /* initilize the struct */
     command.instruction = NULL;
     command.op.opname = NULL;
     command.var1 = NULL;
@@ -22,23 +23,30 @@ static commands extract_command_data(char *str)
     }
     else
     {
+        /* if no label reset the index */
         command.label = NULL;
         index = 0;
     }
+
     free(label);
+
     /* get operation if exist from string and add to struct from last index */
-    get_operation(str, &index, &command);
+    get_command(str, &index, &command);
+    /* skip last later of the command */
     index += index < (strLen - 1);
 
+    /* get first var */
     command.var1 = (char *)malloc(sizeof(char) * (strLen - index));
     if (!command.var1)
         memory_allocation_fail();
 
     strcpy(command.var1, get_variable(str, &index, TRUE));
+    /* if not in the end of the string skip the ',' separetor */
     index += index < (strLen - 1);
 
     if (index < (strLen - 1))
     {
+        /* copy var 2 */
         command.var2 = (char *)malloc(sizeof(char) * (strLen - index));
         if (!command.var2)
             memory_allocation_fail();
