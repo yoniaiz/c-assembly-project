@@ -8,7 +8,7 @@ static int get_operation_from_operations(char *opname)
     /* return operation index by comparing strings */
     int i;
     for (i = 0; i < OPERATIONS_LENGTH; i++)
-        if (COMP_SIZE(operations[i].opname, opname))
+        if (COMP_STRING(operations[i].opname, opname))
             return i;
 
     return -1;
@@ -49,7 +49,7 @@ char *get_label(char *str, int *index)
 
 static int is_valid_instraction(char *str)
 {
-    return COMP_SIZE(str, DATA) || COMP_SIZE(str, STRING) || COMP_SIZE(str, EXTERN) || COMP_SIZE(str, ENTRY);
+    return COMP_STRING(str, DATA) || COMP_STRING(str, STRING) || COMP_STRING(str, EXTERN) || COMP_STRING(str, ENTRY);
 }
 
 void get_command(char *str, int *index, commands *cmd)
