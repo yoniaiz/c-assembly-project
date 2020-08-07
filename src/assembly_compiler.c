@@ -54,25 +54,36 @@ static commands extract_command_data(char *str)
     return command;
 }
 
+static void twoLoopsAlgorithm(commands *cmd, int commands_count)
+{
+    int i;
+    for (i = 0; i < commands_count; i++)
+    {
+        printf("%d %s %s %s\n", cmd[i].command_type, cmd[i].label, cmd[i].op.opname, cmd[i].instruction);
+    }
+}
+
 void complie_file_input_to_assembly(char **lines)
 {
-    int i = 0;
+    int i = 0, commands_count = 0;
     commands *cmd = NULL;
 
     while (lines[i])
     {
-        cmd = (commands *)realloc(cmd, sizeof(commands) * (i + 1));
-        if (!cmd)
+        if (lines[i][0] != '#')
         {
-            memory_allocation_fail();
+            cmd = (commands *)realloc(cmd, sizeof(commands) * (commands_count + 1));
+            if (!cmd)
+            {
+                memory_allocation_fail();
+            }
+            cmd[commands_count] = extract_command_data(lines[i]);
+            commands_count++;
         }
-        cmd[i] = extract_command_data(lines[i]);
         i++;
     }
 
-    for (i = 0; lines[i]; i++)
-    {
-        printf("%d %s %s %s\n", cmd[i].command_type, cmd[i].label, cmd[i].op.opname, cmd[i].instruction);
-    }
     free(lines);
+
+    twoLoopsAlgorithm(cmd, commands_count);
 }

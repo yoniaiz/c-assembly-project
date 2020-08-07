@@ -4,8 +4,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#define TRUE 1
-#define FALSE 0
 #define MAX_BIT_SIZE 24
 #define OPERATIONS_LENGTH 16
 
@@ -54,6 +52,12 @@ typedef enum
     EXECUTE
 } COMMAND_TYPE;
 
+typedef enum
+{
+    FALSE,
+    TRUE
+} BOOLEAN;
+
 /* cpu word structer */
 typedef struct wr
 {
@@ -86,6 +90,31 @@ typedef struct commands_struct
     char *var1;
     char *var2;
 } commands;
+
+typedef struct memory
+{
+    unsigned int address: MAX_BIT_SIZE; 
+    word wr;
+    unsigned int extra_dent_data: MAX_BIT_SIZE; 
+    unsigned int extra_origin_data: MAX_BIT_SIZE; 
+} memory_row;
+
+typedef struct data
+{
+    unsigned int address: MAX_BIT_SIZE; 
+    unsigned int data: MAX_BIT_SIZE; 
+} data_row;
+
+typedef struct symbol
+{
+    char *label;
+    unsigned int address: MAX_BIT_SIZE;
+    COMMAND_TYPE command_type;
+    BOOLEAN isExtern;
+} symbol_row;
+
+
+
 
 /* operatios structor */
 
