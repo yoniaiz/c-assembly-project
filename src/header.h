@@ -72,6 +72,14 @@ typedef struct wr
     unsigned int opcode : 6;
 } word;
 
+typedef struct extra_data
+{
+    unsigned int e : 1;
+    unsigned int r : 1;
+    unsigned int a : 1;
+    unsigned int data : MAX_BIT_SIZE;
+} extra_data;
+
 /* assembly basic operation with funct and code */
 typedef struct op
 {
@@ -95,28 +103,25 @@ typedef struct commands_struct
 
 typedef struct memory
 {
-    unsigned int address: MAX_BIT_SIZE; 
+    unsigned int address : MAX_BIT_SIZE;
     word wr;
-    unsigned int extra_dent_data: MAX_BIT_SIZE; 
-    unsigned int extra_origin_data: MAX_BIT_SIZE; 
+    extra_data extra_dent_data;
+    extra_data extra_origin_data;
 } memory_row;
 
 typedef struct data
 {
-    unsigned int address: MAX_BIT_SIZE; 
-    unsigned int data: MAX_BIT_SIZE; 
+    unsigned int address : MAX_BIT_SIZE;
+    unsigned int data : MAX_BIT_SIZE;
 } data_row;
 
 typedef struct symbol
 {
     char *label;
-    unsigned int address: MAX_BIT_SIZE;
+    unsigned int address : MAX_BIT_SIZE;
     COMMAND_TYPE command_type;
     BOOLEAN isExtern;
 } symbol_row;
-
-
-
 
 /* operatios structor */
 
