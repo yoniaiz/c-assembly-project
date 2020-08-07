@@ -1,5 +1,10 @@
 #include "header.h"
 
+/* operetions memory */
+extern int ic;
+/* data memory */
+extern int dc;
+
 static commands extract_command_data(char *str)
 {
     commands command;
@@ -57,6 +62,10 @@ static commands extract_command_data(char *str)
 static void twoLoopsAlgorithm(commands *cmd, int commands_count)
 {
     int i;
+    data_row *data;
+    memory_row *memory;
+    symbol_row *symbol;
+    
     for (i = 0; i < commands_count; i++)
     {
         printf("%d %s %s %s\n", cmd[i].command_type, cmd[i].label, cmd[i].op.opname, cmd[i].instruction);

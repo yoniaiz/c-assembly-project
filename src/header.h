@@ -78,6 +78,8 @@ typedef struct op
     int opcode;
     int funct;
     char *opname;
+    ADDRESSINGS legal_dest_addressing[3];
+    ADDRESSINGS legal_origin_addressing[3];
 } operation;
 
 /* command after parsing the file */
