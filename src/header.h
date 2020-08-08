@@ -113,6 +113,7 @@ typedef struct data
 {
     unsigned int address : MAX_BIT_SIZE;
     unsigned int data : MAX_BIT_SIZE;
+    unsigned int next : MAX_BIT_SIZE;
 } data_row;
 
 typedef struct symbol
