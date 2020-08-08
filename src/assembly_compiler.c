@@ -44,7 +44,7 @@ static commands extract_command_data(char *str)
     if (!command.var1)
         memory_allocation_fail();
 
-    strcpy(command.var1, get_variable(str, &index, TRUE));
+    strcpy(command.var1, get_variable(str, &index, command.command_type));
 
     if (index < (strLen - 1))
     {
@@ -61,16 +61,15 @@ static commands extract_command_data(char *str)
 
 static void add_instroction_to_symbol_table(commands command, symbol_row **symbol_table, int *symbols_len)
 {
-    int prev_item = *symbols_len;
-    *symbol_table = (symbol_row *)realloc(*symbol_table, sizeof(symbol_row *) * (prev_item + 1));
-    if (!(*symbol_table))
+    *symbol_table = (symbol_row *)realloc(*symbol_table, sizeof(symbol_row) * ((*symbols_len) + 1));
+    if (!*symbol_table)
         memory_allocation_fail();
 
-    symbol_table[prev_item]->label = (char *)malloc(sizeof(char) * strlen(command.label));
-    strcpy(symbol_table[prev_item]->label, command.label);
-    symbol_table[prev_item]->address = dc;
-    symbol_table[prev_item]->command_type = command.command_type;
-    symbol_table[prev_item]->isExtern = COMP_STRING(command.instruction, EXTERN);
+    (*symbol_table)[*symbols_len].label = (char *)malloc(sizeof(char) * strlen(command.label));
+    strcpy((*symbol_table)[*symbols_len].label, command.label);
+    (*symbol_table)[*symbols_len].address = dc;
+    (*symbol_table)[*symbols_len].command_type = command.command_type;
+    (*symbol_table)[*symbols_len].isExtern = COMP_STRING(command.instruction, EXTERN);
     (*symbols_len)++;
 }
 
@@ -84,16 +83,12 @@ static void add_instroction_to_data(commands command, data_row **data)
         {
             if (command.var1[i] != '"')
             {
-                *data = (data_row *)realloc(*data, sizeof(data_row *) * (dc + 1));
+                *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1));
                 if (!*data)
                     memory_allocation_fail();
 
-                data[dc] = (data_row *)malloc(sizeof(data_row) * 1);
-                if (!data[dc])
-                    memory_allocation_fail();
-
-                data[dc]->address = dc;
-                data[dc]->data = (int)command.var1[i];
+                (*data)[dc].address = dc;
+                (*data)[dc].data = (int)command.var1[i];
                 dc++;
             }
         }
@@ -104,11 +99,10 @@ static void add_instroction_to_data(commands command, data_row **data)
         if (!*data)
             memory_allocation_fail();
 
-        data[dc] = (data_row *)malloc(sizeof(data_row) * 1);
-        if (!data[dc])
-            memory_allocation_fail();
-        data[dc]->address = dc;
-        data[dc]->data = decimal_to_binary_unassigned_base_2(atoi(command.var1));
+        printf("%s \n", command.var1);
+        printf("%d \n", atoi(command.var1));
+        (*data)[dc].address = dc;
+        (*data)[dc].data = decimal_to_binary_unassigned_base_2(atoi(command.var1));
 
         dc++;
     }
@@ -129,11 +123,11 @@ static void first_loop(
         {
             if (islabel)
                 add_instroction_to_symbol_table(cmd[i], symbol_table, &symbols_length);
-
             add_instroction_to_data(cmd[i], data);
         }
         i++;
     }
+    printf("%d %d \n", dc, symbols_length);
 }
 
 static void twoLoopsAlgorithm(commands *cmd)
@@ -142,6 +136,7 @@ static void twoLoopsAlgorithm(commands *cmd)
     memory_row *memory = NULL;
     symbol_row *symbol_table = NULL;
     first_loop(cmd, &data, &memory, &symbol_table);
+    free(cmd);
 }
 
 void complie_file_input_to_assembly(char **lines)
@@ -167,5 +162,4 @@ void complie_file_input_to_assembly(char **lines)
     free(lines);
 
     twoLoopsAlgorithm(cmd);
-
 }
