@@ -76,8 +76,8 @@ static void add_instroction_to_symbol_table(commands command, symbol_row **symbo
 static void add_instroction_to_data(commands command, data_row **data)
 {
     int i, numstrlen = 0, isstring = FALSE, prev_dc = 0;
-    char *numstr = NULL;
-    
+    char numstr[strlen(command.var1)];
+
     for (i = 0; command.var1[i]; i++)
     {
         if (COMP_STRING(command.instruction, STRING))
@@ -96,15 +96,15 @@ static void add_instroction_to_data(commands command, data_row **data)
         }
         else
         {
-            numstr = (char *)realloc(numstr, sizeof(char) * (numstrlen + 1));
-            if (!numstr)
-                memory_allocation_fail();
+            numstr[numstrlen] = command.var1[i];
+            numstrlen++;
 
-            *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1));
-            if (!*data)
-                memory_allocation_fail();
             if (command.var1[i] == ',')
             {
+                *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1));
+                if (!*data)
+                    memory_allocation_fail();
+
                 (*data)[dc].address = dc;
                 (*data)[dc].data = decimal_to_binary_unassigned_base_2(atoi(numstr));
                 if (prev_dc)
@@ -117,30 +117,26 @@ static void add_instroction_to_data(commands command, data_row **data)
                 dc++;
                 i++;
             }
-
-            numstr[numstrlen] = command.var1[i];
-            numstrlen++;
         }
     }
 
     if (isstring)
     {
-        *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1));
-        if (!*data)
-            memory_allocation_fail();
-
         (*data)[dc].address = dc;
         (*data)[dc].data = 0;
         dc++;
     }
     else
     {
+        if (!prev_dc)
+        {
+            *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1));
+            if (!*data)
+                memory_allocation_fail();
+        }
         (*data)[dc].address = dc;
-        (*data)[dc].data = decimal_to_binary_unassigned_base_2(atoi(numstr ? numstr : command.var1));
+        (*data)[dc].data = decimal_to_binary_unassigned_base_2(atoi(numstr[0] ? numstr : command.var1));
         dc++;
-
-        if (numstr)
-            free(numstr);
     }
 }
 
@@ -164,6 +160,10 @@ static void first_loop(
 
             add_instroction_to_data(cmd[i], data);
         }
+        else
+        {
+        }
+
         i++;
     }
     printf("%d %d \n", dc, symbols_length);
@@ -172,8 +172,8 @@ static void first_loop(
 
 static void twoLoopsAlgorithm(commands *cmd)
 {
-    data_row *data = NULL;
-    memory_row *memory = NULL;
+    data_row *data = (data_row *)malloc(sizeof(data_row) * 5);
+    memory_row *memory = (memory_row *)malloc(sizeof(memory_row) * 5);
     symbol_row *symbol_table = NULL;
     first_loop(cmd, &data, &memory, &symbol_table);
     free(cmd);
