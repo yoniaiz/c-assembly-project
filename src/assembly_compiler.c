@@ -77,8 +77,8 @@ static void add_instroction_to_data(commands command, data_row **data)
 {
     int i, numstrlen = 0, isstring = FALSE, prev_dc = 0;
     char *numstr = NULL;
-
-    for (i = 0; i < strlen(command.var1) - 1; i++)
+    
+    for (i = 0; command.var1[i]; i++)
     {
         if (COMP_STRING(command.instruction, STRING))
         {
@@ -111,7 +111,6 @@ static void add_instroction_to_data(commands command, data_row **data)
                 {
                     (*data)[prev_dc].next = dc;
                 }
-                printf("%d %d \n", (*data)[dc].address, (*data)[dc].data);
                 prev_dc = dc;
                 numstrlen = 0;
                 strcpy(numstr, "");
@@ -136,14 +135,12 @@ static void add_instroction_to_data(commands command, data_row **data)
     }
     else
     {
+        (*data)[dc].address = dc;
+        (*data)[dc].data = decimal_to_binary_unassigned_base_2(atoi(numstr ? numstr : command.var1));
+        dc++;
+
         if (numstr)
             free(numstr);
-        if (!prev_dc)
-        {
-            (*data)[dc].address = dc;
-            (*data)[dc].data = decimal_to_binary_unassigned_base_2(atoi(command.var1));
-            dc++;
-        }
     }
 }
 
@@ -161,14 +158,16 @@ static void first_loop(
         if (!cmd[i].command_type && cmd[i].var1)
         {
             if (islabel)
+            {
                 add_instroction_to_symbol_table(cmd[i], symbol_table, &symbols_length);
+            }
 
-            printf("cmd[i].var= %s \n", cmd[i].var1);
             add_instroction_to_data(cmd[i], data);
         }
         i++;
     }
     printf("%d %d \n", dc, symbols_length);
+    i = 0;
 }
 
 static void twoLoopsAlgorithm(commands *cmd)
