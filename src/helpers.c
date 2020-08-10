@@ -122,12 +122,12 @@ char *get_variable(char *str, int *index, int first_var)
             memory_allocation_fail();
 
         var[i - 1] = str[*index];
-        var[i] = 0;
 
         (*index)++;
         i++;
     }
 
+    var[i - 1] = 0;
     return var;
 }
 
@@ -199,7 +199,9 @@ int decimal_to_binary_unassigned_base_2(int num)
     if (isnegative)
     {
         /* convert number from base decimal to base to in array form */
+        printf("%d\n",num);
         num = abs(num);
+        printf("%d\n",num);
         for (i = 0; num > 0; i++)
         {
             bits[i] = num % 2;
@@ -220,11 +222,13 @@ int decimal_to_binary_unassigned_base_2(int num)
             }
         }
 
-        for (i = 0; i < MAX_BIT_SIZE; i++)
+        for (i = (MAX_BIT_SIZE - 1); i >= 0; i--)
         {
             /* convert back to number */
+            printf(" %d ", bits[i]);
             converted_number += bits[i] * pow(2, i);
         }
+        printf("converted %d to %d \n", num, converted_number);
     }
     else
     {

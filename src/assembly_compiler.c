@@ -75,10 +75,11 @@ static void add_instroction_to_symbol_table(commands command, symbol_row **symbo
 
 static void add_instroction_to_data(commands command, data_row **data)
 {
-    int i, numstrlen = 0, isstring = FALSE, prev_dc = 0;
-    char numstr[strlen(command.var1)];
+    int i = 0, numstrlen = 0, isstring = FALSE, prev_dc = 0, numbers_count = 0;
+    char *numstr = (char *)malloc(sizeof(char) * 1);
+    int numbers[10];
 
-    for (i = 0; command.var1[i]; i++)
+    while (command.var1[i])
     {
         if (COMP_STRING(command.instruction, STRING))
         {
@@ -96,47 +97,56 @@ static void add_instroction_to_data(commands command, data_row **data)
         }
         else
         {
-            numstr[numstrlen] = command.var1[i];
-            numstrlen++;
-
             if (command.var1[i] == ',')
             {
-                *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1));
-                if (!*data)
-                    memory_allocation_fail();
-
-                (*data)[dc].address = dc;
-                (*data)[dc].data = decimal_to_binary_unassigned_base_2(atoi(numstr));
-                if (prev_dc)
-                {
-                    (*data)[prev_dc].next = dc;
-                }
-                prev_dc = dc;
                 numstrlen = 0;
                 strcpy(numstr, "");
-                dc++;
-                i++;
+                numbers_count++;
+            }
+            else
+            {
+                numstr = (char *)realloc(numstr, sizeof(char) * (++numstrlen));
+                numstr[numstrlen - 1] = command.var1[i];
+            }
+
+            int number = atoi(numstr);
+            if (number)
+            {
+                /*TODO work on the complement to 2 function*/
+                numbers[numbers_count] = number;
             }
         }
+
+        i++;
     }
 
     if (isstring)
     {
+        /* last char  in a string is /0 */
+        *data = (data_row *)realloc(*data, sizeof(data_row) * (dc));
+        if (!*data)
+            memory_allocation_fail();
+
         (*data)[dc].address = dc;
         (*data)[dc].data = 0;
         dc++;
     }
+
     else
     {
-        if (!prev_dc)
+
+        *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + (numbers_count + 2) * 10));
+        if (!*data)
+            memory_allocation_fail();
+
+        for (i = 0; i <= numbers_count; i++)
         {
-            *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1));
-            if (!*data)
-                memory_allocation_fail();
+
+            (*data)[dc].address = dc;
+            (*data)[dc].data = numbers[i];
+
+            dc++;
         }
-        (*data)[dc].address = dc;
-        (*data)[dc].data = decimal_to_binary_unassigned_base_2(atoi(numstr[0] ? numstr : command.var1));
-        dc++;
     }
 }
 
@@ -166,8 +176,16 @@ static void first_loop(
 
         i++;
     }
-    printf("%d %d \n", dc, symbols_length);
-    i = 0;
+
+    for (i = 0; i < dc; i++)
+    {
+        printf("%d\n", (*data)[i].data);
+    }
+
+    for (i = 0; i < symbols_length; i++)
+    {
+        printf("%s\n", (*symbol_table)[i].label);
+    }
 }
 
 static void twoLoopsAlgorithm(commands *cmd)
