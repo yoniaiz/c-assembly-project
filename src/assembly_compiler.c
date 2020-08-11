@@ -59,34 +59,35 @@ static commands extract_command_data(char *str)
     return command;
 }
 
-static void add_instroction_to_symbol_table(commands command, symbol_row **symbol_table, int *symbols_len)
+static void add_to_symbol_table(commands command, symbol_row **symbol_table, int symbols_len)
 {
-    *symbol_table = (symbol_row *)realloc(*symbol_table, sizeof(symbol_row) * ((*symbols_len) + 1));
+    *symbol_table = (symbol_row *)realloc(*symbol_table, sizeof(symbol_row) * (symbols_len + 1));
     if (!*symbol_table)
         memory_allocation_fail();
 
-    (*symbol_table)[*symbols_len].label = (char *)malloc(sizeof(char) * strlen(command.label));
-    strcpy((*symbol_table)[*symbols_len].label, command.label);
-    (*symbol_table)[*symbols_len].address = dc;
-    (*symbol_table)[*symbols_len].command_type = command.command_type;
-    (*symbol_table)[*symbols_len].isExtern = COMP_STRING(command.instruction, EXTERN);
-    (*symbols_len)++;
+    (*symbol_table)[symbols_len].label = (char *)malloc(sizeof(char) * strlen(command.label));
+    strcpy((*symbol_table)[symbols_len].label, command.label);
+    (*symbol_table)[symbols_len].address = dc;
+    (*symbol_table)[symbols_len].command_type = command.command_type;
+    (*symbol_table)[symbols_len].isExtern = command.command_type ? FALSE : COMP_STRING(command.instruction, EXTERN);
 }
 
 static void add_instroction_to_data(commands command, data_row **data)
 {
-    int i = 0, numstrlen = 0, isstring = FALSE, prev_dc = 0, numbers_count = 0;
+    int i = 0, numstrlen = 0, isstring = FALSE, number = 0, numbers_count = 0;
     char *numstr = (char *)malloc(sizeof(char) * 1);
     int numbers[10];
 
     while (command.var1[i])
     {
+        number = 0;
+
         if (COMP_STRING(command.instruction, STRING))
         {
             isstring = TRUE;
             if (command.var1[i] != '"')
             {
-                *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1));
+                *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1) * 100);
                 if (!*data)
                     memory_allocation_fail();
 
@@ -109,7 +110,7 @@ static void add_instroction_to_data(commands command, data_row **data)
                 numstr[numstrlen - 1] = command.var1[i];
             }
 
-            int number = atoi(numstr);
+            number = atoi(numstr);
             if (number)
             {
                 /*TODO work on the complement to 2 function*/
@@ -135,7 +136,7 @@ static void add_instroction_to_data(commands command, data_row **data)
     else
     {
 
-        *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + (numbers_count + 2) * 10));
+        *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + (numbers_count + 1) * 100));
         if (!*data)
             memory_allocation_fail();
 
@@ -156,22 +157,24 @@ static void first_loop(
     memory_row **memory,
     symbol_row **symbol_table)
 {
-    int i = 0, symbols_length = 0, islabel;
+    int i = 0, symbols_length = 0;
 
     while (cmd[i].instruction || cmd[i].op.opname)
     {
-        islabel = cmd[i].label ? 1 : 0;
+
+        if (cmd[i].label)
+        {
+            add_to_symbol_table(cmd[i], symbol_table, symbols_length);
+            symbols_length++;
+        }
         if (!cmd[i].command_type && cmd[i].var1)
         {
-            if (islabel)
-            {
-                add_instroction_to_symbol_table(cmd[i], symbol_table, &symbols_length);
-            }
-
+            /* instuction type */
             add_instroction_to_data(cmd[i], data);
         }
-        else
+        else if (cmd[i].command_type)
         {
+            /* operation type */
         }
 
         i++;
@@ -190,9 +193,13 @@ static void first_loop(
 
 static void twoLoopsAlgorithm(commands *cmd)
 {
-    data_row *data = (data_row *)malloc(sizeof(data_row) * 5);
-    memory_row *memory = (memory_row *)malloc(sizeof(memory_row) * 5);
-    symbol_row *symbol_table = NULL;
+    data_row *data = (data_row *)malloc(sizeof(data_row) * 100);
+    memory_row *memory = (memory_row *)malloc(sizeof(memory_row) * 100);
+    symbol_row *symbol_table = (symbol_row *)malloc(sizeof(symbol_row) * 100);
+
+    if (!data || !memory || !symbol_table)
+        memory_allocation_fail();
+
     first_loop(cmd, &data, &memory, &symbol_table);
     free(cmd);
 }

@@ -199,7 +199,7 @@ int decimal_to_binary_unassigned_base_2(int num)
     if (isnegative)
     {
         /* convert number from base decimal to base to in array form */
-        printf("%d\n",num);
+        
         num = abs(num);
         printf("%d\n",num);
         for (i = 0; num > 0; i++)
