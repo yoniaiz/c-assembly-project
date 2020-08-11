@@ -12,10 +12,10 @@ static commands extract_command_data(char *str)
     char *label = (char *)malloc(sizeof(char) * strLen);
 
     /* initilize the struct */
-    command.instruction = NULL;
-    command.op.opname = NULL;
-    command.var1 = NULL;
-    command.var2 = NULL;
+    command.instruction = (char *)malloc(sizeof(char) * 10);
+    command.op.opname = (char *)malloc(sizeof(char) * 10);
+    command.var1 = (char *)malloc(sizeof(char) * 10);
+    command.var2 = (char *)malloc(sizeof(char) * 10);
 
     /* get label if exist from string and add to struct*/
     strcpy(label, get_label(str, &index));
@@ -142,13 +142,42 @@ static void add_instroction_to_data(commands command, data_row **data)
 
         for (i = 0; i <= numbers_count; i++)
         {
-
+            /*TODO make use off next*/
             (*data)[dc].address = dc;
             (*data)[dc].data = numbers[i];
 
             dc++;
         }
     }
+}
+
+static ADDRESSINGS get_addressing_method(ADDRESSINGS valid_addressings[], char *var)
+{
+    if (var[0] == '#')
+        return IMMEDIATE_ADDRESSING;
+    else if (is_register(var))
+        return IMMEDIATE_REGISTER_ADDRESSING;
+    else
+        return DIRECT_ADDRESSING;
+}
+static word create_word(commands command)
+{
+    word wr;
+    wr.opcode = command.op.opcode;
+    wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var1);
+    wr.origin_register = command.var1;
+    return wr;
+}
+
+static void add_operation_to_memory(commands command, memory_row **memory)
+{
+    *memory = (memory_row *)realloc(*memory, sizeof(memory_row) * (ic + 1));
+    if (!*memory)
+        memory_allocation_fail();
+
+    (*memory)[ic].address = ic;
+    (*memory)[ic].wr = create_word(command);
+    ic++;
 }
 
 static void first_loop(
@@ -167,14 +196,18 @@ static void first_loop(
             add_to_symbol_table(cmd[i], symbol_table, symbols_length);
             symbols_length++;
         }
-        if (!cmd[i].command_type && cmd[i].var1)
+
+        if (cmd[i].command_type)
         {
-            /* instuction type */
-            add_instroction_to_data(cmd[i], data);
+            add_operation_to_memory(cmd[i], memory);
         }
-        else if (cmd[i].command_type)
+        else
         {
-            /* operation type */
+            if (cmd[i].var1)
+            {
+                /* instuction type */
+                add_instroction_to_data(cmd[i], data);
+            }
         }
 
         i++;
@@ -193,9 +226,9 @@ static void first_loop(
 
 static void twoLoopsAlgorithm(commands *cmd)
 {
-    data_row *data = (data_row *)malloc(sizeof(data_row) * 100);
-    memory_row *memory = (memory_row *)malloc(sizeof(memory_row) * 100);
-    symbol_row *symbol_table = (symbol_row *)malloc(sizeof(symbol_row) * 100);
+    data_row *data = (data_row *)malloc(sizeof(data_row) * 50);
+    memory_row *memory = (memory_row *)malloc(sizeof(memory_row) * 50);
+    symbol_row *symbol_table = (symbol_row *)malloc(sizeof(symbol_row) * 50);
 
     if (!data || !memory || !symbol_table)
         memory_allocation_fail();
@@ -225,6 +258,5 @@ void complie_file_input_to_assembly(char **lines)
     }
 
     free(lines);
-
     twoLoopsAlgorithm(cmd);
 }

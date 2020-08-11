@@ -14,6 +14,22 @@ static int get_operation_from_operations(char *opname)
     return -1;
 }
 
+int is_register(char *var)
+{
+    int i;
+    char regstr[2];
+    regstr[0] = 'r';
+
+    for (i = 1; i < 8; i++)
+    {
+        regstr[1] = i + '0';
+        if (COMP_STRING(regstr, var))
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
 char *get_label(char *str, int *index)
 {
     char *label = NULL;
@@ -200,7 +216,7 @@ int decimal_to_binary_unassigned_base_2(int num)
     {
         /* convert number from base decimal to base to in array form */
         num = abs(num);
-        printf("%d\n",num);
+        printf("%d\n", num);
         for (i = 0; num > 0; i++)
         {
             bits[i] = num % 2;

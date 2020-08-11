@@ -139,7 +139,7 @@ void split_input_by_enters_and_remove_spaces(char *str, char ***lines);
 char *get_label(char *str, int *index);
 void get_command(char *str, int *index, commands *cmd);
 char *get_variable(char *str, int *index, int first_var);
-
+int is_register(char *var);
 /* FILE HANDLER */
 void parse_file_to_array_of_strings(char *path, char ***lines);
 
