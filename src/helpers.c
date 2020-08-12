@@ -14,17 +14,20 @@ static int get_operation_from_operations(char *opname)
     return -1;
 }
 
-int is_register(char *var)
+int get_register(char *var)
 {
     int i;
     char regstr[2];
     regstr[0] = 'r';
 
-    for (i = 1; i < 8; i++)
+    if (!var)
+        return FALSE;
+
+    for (i = 1; i < REGISTERS_AMOUNT + 1; i++)
     {
         regstr[1] = i + '0';
         if (COMP_STRING(regstr, var))
-            return TRUE;
+            return i - 1;
     }
 
     return FALSE;

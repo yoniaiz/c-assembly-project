@@ -5,7 +5,7 @@ int ic = IC_INIT;
 /* data memory */
 int dc = DC_INIT;
 
-register_st r1, r2, r3, r4, r5, r6;
+register_st registers[REGISTERS_AMOUNT];
 
 operation operations[OPERATIONS_LENGTH];
 

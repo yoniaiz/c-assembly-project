@@ -1,7 +1,7 @@
 
 #include "header.h"
 
-extern register_st r1, r2, r3, r4, r5, r6;
+extern register_st registers[6];
 extern operation operations[OPERATIONS_LENGTH];
 
 static operation create_op(
@@ -31,18 +31,12 @@ static operation create_op(
 
 static void initialize_registers()
 {
-    r1.id = 1;
-    r1.value = 0;
-    r2.id = 2;
-    r2.value = 0;
-    r3.id = 3;
-    r3.value = 0;
-    r4.id = 4;
-    r4.value = 0;
-    r5.id = 5;
-    r5.value = 0;
-    r6.id = 1;
-    r6.value = 0;
+    int i;
+    for (i = 0; i <= REGISTERS_AMOUNT; i++)
+    {
+        registers[i].id = i + 1;
+        registers[i].value = 0;
+    }
 }
 
 static void initialize_operations()
