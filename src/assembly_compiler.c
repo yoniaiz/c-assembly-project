@@ -285,7 +285,7 @@ void complie_file_input_to_assembly(char **lines)
 
     while (lines[i])
     {
-        if (lines[i][0] != '#')
+        if (lines[i][0] != ';')
         {
             cmd = (commands *)realloc(cmd, sizeof(commands) * (commands_count + 1));
             if (!cmd)
