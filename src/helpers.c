@@ -27,7 +27,7 @@ int get_register(char *var)
     {
         regstr[1] = i + '0';
         if (COMP_STRING(regstr, var))
-            return i - 1;
+            return i;
     }
 
     return FALSE;
@@ -141,12 +141,11 @@ char *get_variable(char *str, int *index, int first_var)
             memory_allocation_fail();
 
         var[i - 1] = str[*index];
-
+        var[i] = 0;
         (*index)++;
         i++;
     }
 
-    var[i - 1] = 0;
     return var;
 }
 

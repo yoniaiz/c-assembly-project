@@ -79,6 +79,7 @@ typedef struct extra_data
     unsigned int r : 1;
     unsigned int a : 1;
     unsigned int data : MAX_BIT_SIZE;
+    int address;
 } extra_data;
 
 /* assembly basic operation with funct and code */

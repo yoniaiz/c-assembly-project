@@ -15,8 +15,8 @@ static commands extract_command_data(char *str)
     /* initilize the struct */
     command.instruction = (char *)malloc(sizeof(char) * 10);
     command.op.opname = (char *)malloc(sizeof(char) * 10);
-    command.var1 = (char *)malloc(sizeof(char) * 10);
-    command.var2 = (char *)malloc(sizeof(char) * 10);
+    command.var1 = NULL;
+    command.var2 = NULL;
 
     /* get label if exist from string and add to struct*/
     strcpy(label, get_label(str, &index));
@@ -154,18 +154,19 @@ static void add_instroction_to_data(commands command, data_row **data)
 
 static ADDRESSINGS get_addressing_method(ADDRESSINGS valid_addressings[], char *var, int reg_idx)
 {
-    if (var[0] == '#')
+    if (var && var[0] == '#')
         return IMMEDIATE_ADDRESSING;
+    else if (var && var[0] == '&')
+        return RELATIVE_ADDRESSING;
     else if (reg_idx)
         return IMMEDIATE_REGISTER_ADDRESSING;
     else
         return DIRECT_ADDRESSING;
 }
 
-static int get_register_val(char *var, int reg_idx)
+static int get_register_val(int reg_idx)
 {
-    int num = atoi(var);
-    return reg_idx ? registers[reg_idx].id : num ? num : 0;
+    return reg_idx ? registers[reg_idx - 1].id : 0;
 }
 
 static word create_word(commands command)
@@ -174,15 +175,31 @@ static word create_word(commands command)
     word wr;
 
     wr.opcode = command.op.opcode;
-    wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var1, reg_origin_idx);
-    wr.origin_register = get_register_val(command.var1, reg_origin_idx);
-    wr.dest_addressing = get_addressing_method(command.op.legal_dest_addressing, command.var2, reg_dest_idx);
-    wr.dest_register = get_register_val(command.var2, reg_dest_idx);
+    wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var2, reg_origin_idx);
+    wr.origin_register = get_register_val(reg_origin_idx);
+    wr.dest_addressing = get_addressing_method(command.op.legal_dest_addressing, command.var1, reg_dest_idx);
+    wr.dest_register = get_register_val(reg_dest_idx);
     wr.funct = command.op.funct;
     wr.a = 1;
     wr.e = 0;
     wr.r = 0;
     return wr;
+}
+
+static extra_data update_extra_data(ADDRESSINGS addressing, char *var)
+{
+    extra_data ed;
+
+    if ((addressing == DIRECT_ADDRESSING || addressing == IMMEDIATE_ADDRESSING) && var)
+    {
+        if (addressing == IMMEDIATE_ADDRESSING)
+            ed.data = atoi(++var);
+
+        ed.a = 1;
+        ed.address = ic++;
+    }
+
+    return ed;
 }
 
 static void add_operation_to_memory(commands command, memory_row **memory)
@@ -192,17 +209,10 @@ static void add_operation_to_memory(commands command, memory_row **memory)
     if (!*memory)
         memory_allocation_fail();
 
-    (*memory)[current_idx].address = ic;
+    (*memory)[current_idx].address = ic++;
     (*memory)[current_idx].wr = create_word(command);
-    if ((*memory)[current_idx].wr.origin_addressing == DIRECT_ADDRESSING)
-    {
-        (*memory)[current_idx].extra_origin_data.data = 1;
-    }
-    if ((*memory)[current_idx].wr.dest_addressing == DIRECT_ADDRESSING)
-    {
-        (*memory)[current_idx].extra_dest_data.data = 1;
-    }
-    ic++;
+    (*memory)[current_idx].extra_dest_data = update_extra_data((*memory)[current_idx].wr.dest_addressing, command.var1);
+    (*memory)[current_idx].extra_origin_data = update_extra_data((*memory)[current_idx].wr.origin_addressing, command.var2);
 }
 
 static void first_loop(
@@ -240,14 +250,14 @@ static void first_loop(
 
     for (i = 0; i < dc; i++)
     {
-        printf("%d\n", (*data)[i].data);
+        (*data)[i].address += ic;
+        printf("%d\n", (*data)[i].address);
     }
 
     for (i = 0; i < (ic - IC_INIT); i++)
     {
-        printf("%d\n", (*memory)[i].wr.opcode);
+        printf("%d %d\n", (*memory)[i].wr.opcode, (*memory)[i].address);
     }
-
 
     for (i = 0; i < symbols_length; i++)
     {
