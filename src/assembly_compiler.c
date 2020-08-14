@@ -264,11 +264,6 @@ static void first_loop(
     for (i = 0; i < dc; i++)
     {
         (*data)[i].address += ic;
-        printf("%d \n", (*data)[i].data);
-    }
-
-    for (i = 0; i < (ic - IC_INIT); i++)
-    {
     }
 
     for (i = 0; i < symbols_length; i++)
@@ -277,7 +272,6 @@ static void first_loop(
         {
             (*symbol_table)[i].address += ic;
         }
-        printf("%d %s\n", (*symbol_table)[i].address, (*symbol_table)[i].label);
     }
 }
 
