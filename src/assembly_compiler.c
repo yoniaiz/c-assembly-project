@@ -68,7 +68,7 @@ static void add_to_symbol_table(commands command, symbol_row **symbol_table, int
 
     (*symbol_table)[symbols_len].label = (char *)malloc(sizeof(char) * strlen(command.label));
     strcpy((*symbol_table)[symbols_len].label, command.label);
-    (*symbol_table)[symbols_len].address = dc;
+    (*symbol_table)[symbols_len].address = command.command_type ? ic : dc;
     (*symbol_table)[symbols_len].command_type = command.command_type;
     (*symbol_table)[symbols_len].isExtern = command.command_type ? FALSE : COMP_STRING(command.instruction, EXTERN);
 }
@@ -114,8 +114,8 @@ static void add_instroction_to_data(commands command, data_row **data)
             number = atoi(numstr);
             if (number)
             {
-                /*TODO work on the complement to 2 function*/
-                numbers[numbers_count] = number;
+                numbers[numbers_count] = decimal_to_binary_unassigned_base_2(number);
+                printf("num - %d  %d\n",numbers[numbers_count], number);
             }
         }
 
@@ -141,13 +141,26 @@ static void add_instroction_to_data(commands command, data_row **data)
         if (!*data)
             memory_allocation_fail();
 
-        for (i = 0; i <= numbers_count; i++)
+        if (numbers_count == 0)
         {
-            /*TODO make use off next*/
             (*data)[dc].address = dc;
-            (*data)[dc].data = numbers[i];
+            (*data)[dc].data = numbers[0];
 
             dc++;
+        }
+        else
+        {
+            for (i = 0; i <= numbers_count; i++)
+            {
+                (*data)[dc].address = dc;
+                (*data)[dc].data = numbers[i];
+                if (i != 0)
+                {
+                    (*data)[dc - i].next = (*data)[dc].address;
+                }
+
+                dc++;
+            }
         }
     }
 }
@@ -190,10 +203,10 @@ static extra_data update_extra_data(ADDRESSINGS addressing, char *var)
 {
     extra_data ed;
 
-    if ((addressing == DIRECT_ADDRESSING || addressing == IMMEDIATE_ADDRESSING) && var)
+    if ((addressing != IMMEDIATE_REGISTER_ADDRESSING) && var)
     {
         if (addressing == IMMEDIATE_ADDRESSING)
-            ed.data = atoi(++var);
+            ed.data = decimal_to_binary_unassigned_base_2(atoi(++var));
 
         ed.a = 1;
         ed.address = ic++;
@@ -251,17 +264,20 @@ static void first_loop(
     for (i = 0; i < dc; i++)
     {
         (*data)[i].address += ic;
-        printf("%d\n", (*data)[i].address);
+        printf("%d \n", (*data)[i].data);
     }
 
     for (i = 0; i < (ic - IC_INIT); i++)
     {
-        printf("%d %d\n", (*memory)[i].wr.opcode, (*memory)[i].address);
     }
 
     for (i = 0; i < symbols_length; i++)
     {
-        printf("%s\n", (*symbol_table)[i].label);
+        if ((*symbol_table)[i].command_type == INSTRACTION)
+        {
+            (*symbol_table)[i].address += ic;
+        }
+        printf("%d %s\n", (*symbol_table)[i].address, (*symbol_table)[i].label);
     }
 }
 

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_BIT_SIZE 24
+#define MAX_BIT_SIZE 21
 #define OPERATIONS_LENGTH 16
 #define REGISTERS_AMOUNT 6
 

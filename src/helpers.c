@@ -218,15 +218,14 @@ int decimal_to_binary_unassigned_base_2(int num)
     {
         /* convert number from base decimal to base to in array form */
         num = abs(num);
-        printf("%d\n", num);
-        for (i = 0; num > 0; i++)
+        for (i = MAX_BIT_SIZE; num > 0; i--)
         {
             bits[i] = num % 2;
             num = num / 2;
         }
 
         /* if the original number was negative then change it in complement to 2 shotcut */
-        for (i = 0; i < MAX_BIT_SIZE; i++)
+        for (i = MAX_BIT_SIZE; i >= 0; i--)
         {
             /* change all bits to the complement */
             if (first_one)
@@ -239,13 +238,11 @@ int decimal_to_binary_unassigned_base_2(int num)
             }
         }
 
-        for (i = (MAX_BIT_SIZE - 1); i >= 0; i--)
+        for (i = MAX_BIT_SIZE; i >= 0; i--)
         {
             /* convert back to number */
-            printf(" %d ", bits[i]);
-            converted_number += bits[i] * pow(2, i);
+            converted_number += bits[i] * (int)floor(pow(2, (MAX_BIT_SIZE - i)));
         }
-        printf("converted %d to %d \n", num, converted_number);
     }
     else
     {
