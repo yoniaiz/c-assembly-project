@@ -115,7 +115,7 @@ static void add_instroction_to_data(commands command, data_row **data)
             if (number)
             {
                 numbers[numbers_count] = decimal_to_binary_unassigned_base_2(number);
-                printf("num - %d  %d\n",numbers[numbers_count], number);
+                printf("num - %d  %d\n", numbers[numbers_count], number);
             }
         }
 
