@@ -142,6 +142,7 @@ char *get_label(char *str, int *index);
 void get_command(char *str, int *index, commands *cmd);
 char *get_variable(char *str, int *index, int first_var);
 int get_register(char *var);
+commands extract_command_data(char *str);
 /* FILE HANDLER */
 void parse_file_to_array_of_strings(char *path, char ***lines);
 
