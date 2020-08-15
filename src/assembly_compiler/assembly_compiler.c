@@ -11,8 +11,11 @@ static void twoLoopsAlgorithm(commands *cmd)
 
     first_loop(cmd, &data, &memory, &symbol_table);
     free(cmd);
-
     second_loop(data, memory, symbol_table);
+    
+    free(data);
+    free(memory);
+    free(symbol_table);
 }
 
 void complie_file_input_to_assembly(char **lines)

@@ -59,7 +59,7 @@ static void add_instroction_to_data(commands command, data_row **data)
             number = atoi(numstr);
             if (number)
             {
-                numbers[numbers_count] = decimal_to_binary_unassigned_base_2(number);
+                numbers[numbers_count] = (number);
             }
         }
 
@@ -132,9 +132,9 @@ static word create_word(commands command)
     word wr;
 
     wr.opcode = command.op.opcode;
-    wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var2, reg_origin_idx);
+    wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var1, reg_origin_idx);
     wr.origin_register = get_register_val(reg_origin_idx);
-    wr.dest_addressing = get_addressing_method(command.op.legal_dest_addressing, command.var1, reg_dest_idx);
+    wr.dest_addressing = get_addressing_method(command.op.legal_dest_addressing, command.var2, reg_dest_idx);
     wr.dest_register = get_register_val(reg_dest_idx);
     wr.funct = command.op.funct;
     wr.a = 1;
@@ -146,13 +146,17 @@ static word create_word(commands command)
 static extra_data update_extra_data(ADDRESSINGS addressing, char *var)
 {
     extra_data ed;
-
+    ed.data = 0;
     if ((addressing != IMMEDIATE_REGISTER_ADDRESSING) && var)
     {
         if (addressing == IMMEDIATE_ADDRESSING)
-            ed.data = decimal_to_binary_unassigned_base_2(atoi(++var));
+            ed.data = (atoi(++var));
 
-        ed.a = 1;
+        if (addressing == DIRECT_ADDRESSING)
+            ed.r = 1;
+        else
+            ed.a = 1;
+
         ed.address = ic++;
     }
 
@@ -167,9 +171,10 @@ static void add_operation_to_memory(commands command, memory_row **memory)
         memory_allocation_fail();
 
     (*memory)[current_idx].address = ic++;
+    (*memory)[current_idx].cmd = command;
     (*memory)[current_idx].wr = create_word(command);
-    (*memory)[current_idx].extra_dest_data = update_extra_data((*memory)[current_idx].wr.dest_addressing, command.var1);
-    (*memory)[current_idx].extra_origin_data = update_extra_data((*memory)[current_idx].wr.origin_addressing, command.var2);
+    (*memory)[current_idx].extra_origin_data = update_extra_data((*memory)[current_idx].wr.origin_addressing, command.var1);
+    (*memory)[current_idx].extra_dest_data = update_extra_data((*memory)[current_idx].wr.dest_addressing, command.var2);
 }
 
 void first_loop(
