@@ -148,7 +148,6 @@ int *decimal_to_binary(int num, int size)
         bits[i] = num % 2;
         num = num / 2;
     }
-
     return bits;
 }
 char *word_to_hex(word wr)
@@ -156,8 +155,12 @@ char *word_to_hex(word wr)
     int i;
     int fourDigitBuffer[4];
     int hex = 0;
-    int *functBinary = decimal_to_binary(wr.funct, 4);
-    char *hexstr = (char *)malloc(sizeof(char) * 10);
+    char ch;
+    int *functBinary = decimal_to_binary(wr.funct, 5);
+    int *originRegBinary = decimal_to_binary(wr.origin_register, 3);
+    char *hexstr = (char *)malloc(sizeof(char) * 1);
+    char *totalhexstr = (char *)malloc(sizeof(char) * 7);
+    char *temp = (char *)malloc(sizeof(char) * 7);
     /* get extention type and */
     fourDigitBuffer[0] = wr.e;
     fourDigitBuffer[1] = wr.r;
@@ -168,7 +171,23 @@ char *word_to_hex(word wr)
     {
         hex = (hex << 1) | fourDigitBuffer[i];
     }
-    puts("\n");
+
+    ch = (char)hex;
+    printf("CH = %c\n",ch);
     sprintf(hexstr, "%X", hex);
-    return hexstr;
+    strcpy(totalhexstr, hexstr);
+
+    hex = 0;
+    for (i = 4; i > 0; i--)
+    {
+        printf("%d \t", functBinary[i]);
+        hex = (hex << 1) | functBinary[i];
+    }
+
+    sprintf(hexstr, "%X", hex);
+    strcpy(temp, totalhexstr);
+    strcat(hexstr, temp);
+    strcpy(totalhexstr, hexstr);
+
+    return totalhexstr;
 }
