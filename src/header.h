@@ -127,7 +127,12 @@ typedef struct symbol
     BOOLEAN isExtern;
 } symbol_row;
 
-/* operatios structor */
+typedef struct files
+{
+    char *objectF;
+    char *externalF;
+    char *entryF;
+} output_files_strs;
 
 /* register structor*/
 typedef struct st
@@ -138,6 +143,8 @@ typedef struct st
 
 /* Helpers */
 int decimal_to_binary_unassigned_base_2(int decimalnum);
+int decimal_to_hex(int num);
+char *word_to_hex(word wr);
 void split_input_by_enters_and_remove_spaces(char *str, char ***lines);
 /* FILE HANDLER */
 void parse_file_to_array_of_strings(char *path, char ***lines);
@@ -152,4 +159,3 @@ void no_args_fail();
 
 /* Assembly compiler */
 void complie_file_input_to_assembly(char **lines);
-

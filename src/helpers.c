@@ -103,3 +103,72 @@ int decimal_to_binary_unassigned_base_2(int num)
 
     return converted_number;
 }
+
+int binary_to_hex(int bits[])
+{
+    int i = MAX_BIT_SIZE;
+    int num = 0;
+    do
+    {
+        num = (num << 1) | bits[i];
+        i--;
+    } while (bits[i]);
+
+    return num;
+}
+
+int decimal_to_hex(int num)
+{
+    int i;
+    int bits[MAX_BIT_SIZE] = {0};
+    int hex = 0;
+    printf("%d \n", num);
+    for (i = 0; num > 0; i++)
+    {
+        bits[i] = num % 2;
+        num = num / 2;
+    }
+
+    for (i = (MAX_BIT_SIZE - 1); i >= 0; i--)
+    {
+        hex = (hex << 1) | bits[i];
+    }
+
+    return hex;
+}
+
+int *decimal_to_binary(int num, int size)
+{
+    int i;
+    int *bits = (int *)calloc(size, sizeof(int));
+    if (!bits)
+        memory_allocation_fail();
+    for (i = 0; num > 0; i++)
+    {
+        bits[i] = num % 2;
+        num = num / 2;
+    }
+
+    return bits;
+}
+char *word_to_hex(word wr)
+{
+    int i;
+    int fourDigitBuffer[4];
+    int hex = 0;
+    int *functBinary = decimal_to_binary(wr.funct, 4);
+    char *hexstr = (char *)malloc(sizeof(char) * 10);
+    /* get extention type and */
+    fourDigitBuffer[0] = wr.e;
+    fourDigitBuffer[1] = wr.r;
+    fourDigitBuffer[2] = wr.a;
+    fourDigitBuffer[3] = functBinary[0];
+
+    for (i = 3; i >= 0; i--)
+    {
+        hex = (hex << 1) | fourDigitBuffer[i];
+    }
+    puts("\n");
+    sprintf(hexstr, "%X", hex);
+    return hexstr;
+}

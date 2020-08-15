@@ -1,7 +1,12 @@
 #include "header.h"
 
 #define MAX_LABEL_LENGTH 31
+#define MAX_HEX_SIZE 6
 
+/* operetions memory */
+extern int ic;
+/* data memory */
+extern int dc;
 extern operation operations[OPERATIONS_LENGTH];
 
 static int get_operation_from_operations(char *opname)
@@ -202,4 +207,34 @@ commands extract_command_data(char *str)
     }
 
     return command;
+}
+
+char *create_object_file_str(memory_row *memory, data_row *data)
+{
+    int data_size = dc, str_count = 0, i;
+    int total_size = (ic - IC_INIT) + data_size;
+    char data_size_str[10], total_size_str[10], hex[MAX_HEX_SIZE ];
+    char *str = (char *)malloc(sizeof(char) * ((MAX_HEX_SIZE * 2 + 1) * total_size + 1));
+    if (!str)
+        memory_allocation_fail();
+    sprintf(data_size_str, "%d", data_size);
+    sprintf(total_size_str, "%d", total_size);
+
+    str[str_count++] = '\t';
+    for (i = 0; i < strlen(total_size_str); i++)
+        str[str_count++] = total_size_str[i];
+
+    str[str_count++] = '\t';
+    for (i = 0; i < strlen(data_size_str); i++)
+        str[str_count++] = data_size_str[i];
+    str[str_count++] = '\n';
+
+    for (i = 0; i < (ic - IC_INIT); i++)
+    {
+        if (memory[i].address)
+        {
+            printf("%s \n", word_to_hex(memory[i].wr));
+        }
+    }
+    return str;
 }

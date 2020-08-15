@@ -33,11 +33,12 @@ static int get_extra_data_data(ADDRESSINGS addressing, int address, char *var, s
     return 0;
 }
 
-void second_loop(data_row *data, memory_row *memory, symbol_row *symbol_table)
+void second_loop(memory_row *memory, symbol_row *symbol_table)
 {
     int i;
     for (i = 0; i < (ic - IC_INIT); i++)
     {
+        /* complete the memory missing data */
         if (memory[i].address)
         {
             if (memory[i].wr.origin_addressing != IMMEDIATE_REGISTER_ADDRESSING && memory[i].wr.origin_addressing != IMMEDIATE_ADDRESSING)
@@ -48,9 +49,6 @@ void second_loop(data_row *data, memory_row *memory, symbol_row *symbol_table)
             {
                 memory[i].extra_dest_data.data = get_extra_data_data(memory[i].wr.dest_addressing, 0, memory[i].cmd.var2, symbol_table);
             }
-            printf("var 1 = %s \t var2 = %s \t address %d \t", memory[i].cmd.var1 ,memory[i].cmd.var2, memory[i].address);
-            printf("origin %d \t", memory[i].extra_origin_data.data);
-            printf("dest %d \n", memory[i].extra_dest_data.data);
         }
     }
 }
