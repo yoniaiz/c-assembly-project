@@ -152,14 +152,15 @@ int *decimal_to_binary(int num, int size)
 }
 char *word_to_hex(word wr)
 {
-    int i = 0, j = 0, k = 3;
-    int hex = 0;
+    int i = 0, j = 0, k = 3, hex = 0;
+    unsigned int *p = (unsigned int *)(&wr);
     char *hexstr = (char *)malloc(sizeof(char) * 1);
-    char totalhexstr = (char *)malloc(sizeof(char) * 7);
-    char totalhexstrArr[7];
+    char *totalhexstr = (char *)malloc(sizeof(char) * 7);
     int bitsMatrix[6][4];
 
-    unsigned int *p = (unsigned int *)(&wr);
+    if (!hexstr || !totalhexstr)
+        memory_allocation_fail();
+
     for (i = 0; i < (MAX_BIT_SIZE + 3); i++)
     {
         if (i != 0 && i % 4 == 0)
@@ -178,18 +179,13 @@ char *word_to_hex(word wr)
             hex = (hex << 1) | bitsMatrix[i][k];
         }
         sprintf(hexstr, "%X", hex);
-        printf("%s\n", hexstr);
-        if (i == 5)
-        {
-            strcpy(totalhexstrArr, hexstr);
-        }
-        else
-        {
-            strcat(totalhexstrArr, hexstr);
-        }
         hex = 0;
+        if (i == 5)
+            strcpy(totalhexstr, hexstr);
+        else
+            strcat(totalhexstr, hexstr);
     }
-    totalhexstrArr[6] = '\0';
-    
-    return "totalhexstr";
+    totalhexstr[6] = 0;
+
+    return totalhexstr;
 }
