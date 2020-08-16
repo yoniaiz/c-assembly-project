@@ -6,9 +6,7 @@ static void twoLoopsAlgorithm(commands *cmd)
     data_row *data = (data_row *)malloc(sizeof(data_row) * 50);
     memory_row *memory = (memory_row *)malloc(sizeof(memory_row) * 50);
     symbol_row *symbol_table = (symbol_row *)malloc(sizeof(symbol_row) * 50);
-    /*ofs.objectF = (char *)malloc(sizeof(char) * 50);
-    ofs.externalF = (char *)malloc(sizeof(char) * 50);
-    ofs.entryF = (char *)malloc(sizeof(char) * 50);*/
+    ofs.objectF = (char *)malloc(sizeof(char) * 50);
 
     if (!data || !memory || !symbol_table)
         memory_allocation_fail();
@@ -19,7 +17,8 @@ static void twoLoopsAlgorithm(commands *cmd)
 
     free(symbol_table);
 
-    printf("%s\n", create_object_file_str(memory, data));
+    strcpy(ofs.objectF, create_object_file_str(memory, data));
+    printf("%s\n", ofs.objectF);
     /*ofs.externalF = create_external_file_str();
     ofs.entryF = create_entry_file_str();*/
 

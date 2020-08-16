@@ -13,6 +13,9 @@
 
 /* macros */
 #define COMP_STRING(X, Y) (strcmp(X, Y) == 0 ? TRUE : FALSE)
+#define COPY_STRING_BY_CHAR(MAIN, STR, I, STR_COUNT) \
+    for (I = 0; I < strlen(STR); I++)                \
+        MAIN[STR_COUNT++] = STR[I];
 #define MATRIX_SIZE(a) (sizeof(a) / sizeof(a[0]))
 /* all assembly commands */
 #define MOV "mov"

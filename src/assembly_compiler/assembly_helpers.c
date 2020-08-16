@@ -211,9 +211,9 @@ commands extract_command_data(char *str)
 
 char *create_object_file_str(memory_row *memory, data_row *data)
 {
-    int data_size = dc, str_count = 0, i;
+    int data_size = dc, str_count = 0, i, j;
     int total_size = (ic - IC_INIT) + data_size;
-    char data_size_str[10], total_size_str[10], hex[MAX_HEX_SIZE ];
+    char data_size_str[10], total_size_str[10], hex[MAX_HEX_SIZE], address[MAX_HEX_SIZE] = {0};
     char *str = (char *)malloc(sizeof(char) * ((MAX_HEX_SIZE * 2 + 1) * total_size + 1));
     if (!str)
         memory_allocation_fail();
@@ -221,19 +221,22 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     sprintf(total_size_str, "%d", total_size);
 
     str[str_count++] = '\t';
-    for (i = 0; i < strlen(total_size_str); i++)
-        str[str_count++] = total_size_str[i];
+    COPY_STRING_BY_CHAR(str, total_size_str, i, str_count);
 
     str[str_count++] = '\t';
-    for (i = 0; i < strlen(data_size_str); i++)
-        str[str_count++] = data_size_str[i];
+    COPY_STRING_BY_CHAR(str, data_size_str, i, str_count);
     str[str_count++] = '\n';
 
-    for (i = 0; i < (ic - IC_INIT); i++)
+    for (j = 0; j < (ic - IC_INIT); j++)
     {
-        if (memory[i].address)
+        if (memory[j].address)
         {
-            printf("%s \n", word_to_hex(memory[i].wr));
+            sprintf(address, "%d", memory[j].address);
+            COPY_STRING_BY_CHAR(str, address, i, str_count);
+            str[str_count++] = '\t';
+            strcpy(hex, word_to_hex(memory[j].wr));
+            COPY_STRING_BY_CHAR(str, hex, i, str_count);
+            str[str_count++] = '\n';
         }
     }
     return str;
