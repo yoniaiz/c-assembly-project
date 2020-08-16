@@ -152,42 +152,44 @@ int *decimal_to_binary(int num, int size)
 }
 char *word_to_hex(word wr)
 {
-    int i;
-    int fourDigitBuffer[4];
+    int i = 0, j = 0, k = 3;
     int hex = 0;
-    char ch;
-    int *functBinary = decimal_to_binary(wr.funct, 5);
-    int *originRegBinary = decimal_to_binary(wr.origin_register, 3);
     char *hexstr = (char *)malloc(sizeof(char) * 1);
-    char *totalhexstr = (char *)malloc(sizeof(char) * 7);
-    char *temp = (char *)malloc(sizeof(char) * 7);
-    /* get extention type and */
-    fourDigitBuffer[0] = wr.e;
-    fourDigitBuffer[1] = wr.r;
-    fourDigitBuffer[2] = wr.a;
-    fourDigitBuffer[3] = functBinary[0];
+    char totalhexstr = (char *)malloc(sizeof(char) * 7);
+    char totalhexstrArr[7];
+    int bitsMatrix[6][4];
 
-    for (i = 3; i >= 0; i--)
+    unsigned int *p = (unsigned int *)(&wr);
+    for (i = 0; i < (MAX_BIT_SIZE + 3); i++)
     {
-        hex = (hex << 1) | fourDigitBuffer[i];
+        if (i != 0 && i % 4 == 0)
+        {
+            k = 3;
+            j++;
+        }
+
+        bitsMatrix[j][k--] = (((*p) >> i) & 1);
     }
 
-    ch = (char)hex;
-    printf("CH = %c\n",ch);
-    sprintf(hexstr, "%X", hex);
-    strcpy(totalhexstr, hexstr);
-
-    hex = 0;
-    for (i = 4; i > 0; i--)
+    for (i = 5; i >= 0; i--)
     {
-        printf("%d \t", functBinary[i]);
-        hex = (hex << 1) | functBinary[i];
+        for (k = 3; k >= 0; k--)
+        {
+            hex = (hex << 1) | bitsMatrix[i][k];
+        }
+        sprintf(hexstr, "%X", hex);
+        printf("%s\n", hexstr);
+        if (i == 5)
+        {
+            strcpy(totalhexstrArr, hexstr);
+        }
+        else
+        {
+            strcat(totalhexstrArr, hexstr);
+        }
+        hex = 0;
     }
-
-    sprintf(hexstr, "%X", hex);
-    strcpy(temp, totalhexstr);
-    strcat(hexstr, temp);
-    strcpy(totalhexstr, hexstr);
-
-    return totalhexstr;
+    totalhexstrArr[6] = '\0';
+    
+    return "totalhexstr";
 }
