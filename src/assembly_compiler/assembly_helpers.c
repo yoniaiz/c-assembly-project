@@ -237,6 +237,26 @@ char *create_object_file_str(memory_row *memory, data_row *data)
             strcpy(hex, word_to_hex(memory[j].wr));
             COPY_STRING_BY_CHAR(str, hex, i, str_count);
             str[str_count++] = '\n';
+
+            if (memory[j].extra_origin_data.address && memory[j].extra_origin_data.data)
+            {
+                sprintf(address, "%d", memory[j].extra_origin_data.address);
+                COPY_STRING_BY_CHAR(str, address, i, str_count);
+                str[str_count++] = '\t';
+                strcpy(hex, word_to_hex(memory[j].wr));
+                COPY_STRING_BY_CHAR(str, hex, i, str_count);
+                str[str_count++] = '\n';
+            }
+
+            if (memory[j].extra_dest_data.address && memory[j].extra_dest_data.data)
+            {
+                sprintf(address, "%d", memory[j].extra_dest_data.address);
+                COPY_STRING_BY_CHAR(str, address, i, str_count);
+                str[str_count++] = '\t';
+                strcpy(hex, word_to_hex(memory[j].wr));
+                COPY_STRING_BY_CHAR(str, hex, i, str_count);
+                str[str_count++] = '\n';
+            }
         }
     }
     return str;
