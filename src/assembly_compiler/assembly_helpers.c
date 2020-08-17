@@ -274,5 +274,15 @@ char *create_object_file_str(memory_row *memory, data_row *data)
             }
         }
     }
+
+    for (j = 0; j < dc; j++)
+    {
+        sprintf(address, "%d", data[j].address);
+        COPY_STRING_BY_CHAR(str, address, i, str_count);
+        str[str_count++] = '\t';
+        sprintf(hex, "%X", data[j].data);
+        COPY_STRING_BY_CHAR(str, hex, i, str_count);
+        str[str_count++] = '\n';
+    }
     return str;
 }

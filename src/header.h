@@ -117,7 +117,7 @@ typedef struct memory
 
 typedef struct data
 {
-    unsigned int address : MAX_BIT_SIZE;
+    int address;
     unsigned int data : MAX_BIT_SIZE;
     unsigned int next : MAX_BIT_SIZE;
 } data_row;
