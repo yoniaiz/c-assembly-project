@@ -59,10 +59,9 @@ void split_input_by_enters_and_remove_spaces(char *str, char ***lines)
     }
 }
 
-char *word_to_hex(word wr)
+char *word_to_hex(unsigned int *p)
 {
     int i = 0, j = 0, k = 3, hex = 0;
-    unsigned int *p = (unsigned int *)(&wr);
     char *hexstr = (char *)malloc(sizeof(char) * 1);
     char *totalhexstr = (char *)malloc(sizeof(char) * 7);
     int bitsMatrix[6][4];
@@ -85,8 +84,10 @@ char *word_to_hex(word wr)
     {
         for (k = 3; k >= 0; k--)
         {
+            printf("%d \t", bitsMatrix[i][k]);
             hex = (hex << 1) | bitsMatrix[i][k];
         }
+        puts("");
         sprintf(hexstr, "%X", hex);
         hex = 0;
         if (i == 5)
@@ -94,6 +95,7 @@ char *word_to_hex(word wr)
         else
             strcat(totalhexstr, hexstr);
     }
+    puts("");
     totalhexstr[6] = 0;
 
     return totalhexstr;
