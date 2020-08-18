@@ -305,7 +305,7 @@ char *create_object_file_str(memory_row *memory, data_row *data)
         }
     }
 
-    for (j = 0; j < (dc - 1); j++)
+    for (j = 0; j < dc; j++)
     {
         sprintf(hex, "%X", data[j].data);
         APPEND_DATA_TO_HEX_CONVERTION(address, data[j].address, str, hex_to_six_chars(hex), str_count);
