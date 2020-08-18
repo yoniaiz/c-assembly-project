@@ -1,11 +1,11 @@
 #include "header.h"
 
 #define CONVER_BIT_FIELD_TO_UNSIGNED_INT(BF) (unsigned int *)(&BF)
-#define APPEND_DATA_TO_HEX_CONVERTION(ADDRESS_STR, DATA_ADDRESS, MAIN, I, DATA, STR_COUNT) \
-    sprintf(ADDRESS_STR, "%d", DATA_ADDRESS);                                              \
-    COPY_STRING_BY_CHAR(MAIN, ADDRESS_STR, I, STR_COUNT);                                  \
-    MAIN[STR_COUNT++] = '\t';                                                              \
-    COPY_STRING_BY_CHAR(MAIN, DATA, I, STR_COUNT);                                         \
+#define APPEND_DATA_TO_HEX_CONVERTION(ADDRESS_STR, DATA_ADDRESS, MAIN, DATA, STR_COUNT) \
+    sprintf(ADDRESS_STR, "%d", DATA_ADDRESS);                                           \
+    COPY_STRING_BY_CHAR(MAIN, ADDRESS_STR, STR_COUNT);                                  \
+    MAIN[STR_COUNT++] = '\t';                                                           \
+    COPY_STRING_BY_CHAR(MAIN, DATA, STR_COUNT);                                         \
     MAIN[STR_COUNT++] = '\n';
 
 #define MAX_LABEL_LENGTH 31
@@ -270,7 +270,7 @@ static char *extra_data_data_to_hex(extra_data data)
 }
 char *create_object_file_str(memory_row *memory, data_row *data)
 {
-    int data_size = dc, str_count = 0, i, j;
+    int data_size = dc, str_count = 0, j;
     int total_size = (ic - IC_INIT) + data_size;
     char data_size_str[10], total_size_str[10], hex[MAX_HEX_SIZE], address[MAX_HEX_SIZE] = {0};
     char *str = (char *)malloc(calculate_total_size_object_file_str_size());
@@ -281,26 +281,26 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     sprintf(total_size_str, "%d", total_size);
 
     str[str_count++] = '\t';
-    COPY_STRING_BY_CHAR(str, total_size_str, i, str_count);
+    COPY_STRING_BY_CHAR(str, total_size_str, str_count);
 
     str[str_count++] = '\t';
-    COPY_STRING_BY_CHAR(str, data_size_str, i, str_count);
+    COPY_STRING_BY_CHAR(str, data_size_str, str_count);
     str[str_count++] = '\n';
 
     for (j = 0; j < (ic - IC_INIT); j++)
     {
         if (memory[j].address)
         {
-            APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].address, str, i, word_to_hex(CONVER_BIT_FIELD_TO_UNSIGNED_INT(memory[j].wr)), str_count);
+            APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].address, str, word_to_hex(CONVER_BIT_FIELD_TO_UNSIGNED_INT(memory[j].wr)), str_count);
 
             if (memory[j].extra_origin_data.address && memory[j].extra_origin_data.data)
             {
-                APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_origin_data.address, str, i, extra_data_data_to_hex(memory[j].extra_origin_data), str_count);
+                APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_origin_data.address, str, extra_data_data_to_hex(memory[j].extra_origin_data), str_count);
             }
 
             if (memory[j].extra_dest_data.address && memory[j].extra_dest_data.data)
             {
-                APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_dest_data.address, str, i, extra_data_data_to_hex(memory[j].extra_dest_data), str_count);
+                APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_dest_data.address, str, extra_data_data_to_hex(memory[j].extra_dest_data), str_count);
             }
         }
     }
@@ -308,7 +308,7 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     for (j = 0; j < (dc - 1); j++)
     {
         sprintf(hex, "%X", data[j].data);
-        APPEND_DATA_TO_HEX_CONVERTION(address, data[j].address, str, i, hex_to_six_chars(hex), str_count);
+        APPEND_DATA_TO_HEX_CONVERTION(address, data[j].address, str, hex_to_six_chars(hex), str_count);
     }
 
     str[str_count] = 0;

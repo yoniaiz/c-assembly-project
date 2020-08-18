@@ -14,9 +14,12 @@
 
 /* macros */
 #define COMP_STRING(X, Y) (strcmp(X, Y) == 0 ? TRUE : FALSE)
-#define COPY_STRING_BY_CHAR(MAIN, STR, I, STR_COUNT) \
-    for (I = 0; I < strlen(STR); I++)                \
-        MAIN[STR_COUNT++] = STR[I];
+#define COPY_STRING_BY_CHAR(MAIN, STR, STR_COUNT) \
+    {                                             \
+        int x;                                    \
+        for (x = 0; x < strlen(STR); x++)         \
+            MAIN[STR_COUNT++] = STR[x];           \
+    }
 #define MATRIX_SIZE(a) (sizeof(a) / sizeof(a[0]))
 /* all assembly commands */
 #define MOV "mov"
@@ -148,7 +151,7 @@ typedef struct st
 /* Helpers */
 int decimal_to_binary_unassigned_base_2(int decimalnum);
 int decimal_to_hex(int num);
-char *word_to_hex(unsigned int* p);
+char *word_to_hex(unsigned int *p);
 void split_input_by_enters_and_remove_spaces(char *str, char ***lines);
 int calculate_total_size_object_file_str_size();
 /* FILE HANDLER */
