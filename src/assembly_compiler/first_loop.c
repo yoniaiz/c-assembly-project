@@ -20,7 +20,7 @@ static void add_to_symbol_table(commands command, symbol_row **symbol_table, int
 
 static void add_instroction_to_data(commands command, data_row **data)
 {
-    int i = 0, numstrlen = 0, isstring = FALSE, number = 0, numbers_count = 0;
+    int i = 0, numstrlen = 0, isstring = FALSE, isdata = FALSE, number = 0, numbers_count = 0;
     char *numstr = (char *)malloc(sizeof(char) * 1);
     int numbers[10];
 
@@ -42,8 +42,9 @@ static void add_instroction_to_data(commands command, data_row **data)
                 dc++;
             }
         }
-        else
+        else if (COMP_STRING(command.instruction, DATA))
         {
+            isdata = TRUE;
             if (command.var1[i] == ',')
             {
                 numstrlen = 0;
@@ -78,7 +79,7 @@ static void add_instroction_to_data(commands command, data_row **data)
         dc++;
     }
 
-    else
+    else if (isdata)
     {
 
         *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + (numbers_count + 1) * 100));
@@ -200,10 +201,15 @@ void first_loop(
         }
         else
         {
+            /* handel instruction */
             if (cmd[i].var1)
             {
-                /* instuction type */
+                /* handle data and string types  */
                 add_instroction_to_data(cmd[i], data);
+            }
+            else
+            {
+                /* handle extern and entry types */
             }
         }
 
