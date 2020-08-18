@@ -166,4 +166,4 @@ void file_fail();
 void no_args_fail();
 
 /* Assembly compiler */
-void complie_file_input_to_assembly(char **lines);
+output_files_strs complie_file_input_to_assembly(char **lines);

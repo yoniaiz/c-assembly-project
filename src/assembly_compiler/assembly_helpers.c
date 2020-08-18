@@ -280,11 +280,13 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     sprintf(data_size_str, "%d", data_size);
     sprintf(total_size_str, "%d", total_size);
 
-    str[str_count++] = '\t';
+    str[str_count++] = ' ';
     COPY_STRING_BY_CHAR(str, total_size_str, str_count);
 
     str[str_count++] = '\t';
+    str[str_count++] = ' ';
     COPY_STRING_BY_CHAR(str, data_size_str, str_count);
+    str[str_count++] = '\n';
     str[str_count++] = '\n';
 
     for (j = 0; j < (ic - IC_INIT); j++)

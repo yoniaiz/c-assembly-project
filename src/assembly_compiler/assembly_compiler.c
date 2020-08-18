@@ -1,6 +1,6 @@
 #include "header.h"
 
-static void twoLoopsAlgorithm(commands *cmd)
+static output_files_strs twoLoopsAlgorithm(commands *cmd)
 {
     output_files_strs ofs;
     data_row *data = (data_row *)malloc(sizeof(data_row) * 50);
@@ -20,13 +20,15 @@ static void twoLoopsAlgorithm(commands *cmd)
         memory_allocation_fail();
 
     strcpy(ofs.objectF, create_object_file_str(memory, data));
-    printf("%s\n", ofs.objectF);
+    printf("%s", ofs.objectF);
     /*ofs.externalF = create_external_file_str();
     ofs.entryF = create_entry_file_str();*/
     free(data);
+
+    return ofs;
 }
 
-void complie_file_input_to_assembly(char **lines)
+output_files_strs complie_file_input_to_assembly(char **lines)
 {
     int i = 0, commands_count = 0;
     commands *cmd = NULL;
@@ -47,5 +49,5 @@ void complie_file_input_to_assembly(char **lines)
     }
 
     free(lines);
-    twoLoopsAlgorithm(cmd);
+    return twoLoopsAlgorithm(cmd);
 }

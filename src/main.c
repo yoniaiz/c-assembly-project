@@ -12,7 +12,7 @@ operation operations[OPERATIONS_LENGTH];
 int main(int argc, char *argv[])
 {
     char **lines = NULL;
-
+    output_files_strs ofs;
     if (argc == 1)
     {
         no_args_fail();
@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
     initialize_prog();
     parse_file_to_array_of_strings(argv[1], &lines);
-    complie_file_input_to_assembly(lines);
+    ofs = complie_file_input_to_assembly(lines);
+    printf("%s \n", ofs.entryF);
     return 1;
 }
