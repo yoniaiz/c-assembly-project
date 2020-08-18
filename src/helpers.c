@@ -84,10 +84,8 @@ char *word_to_hex(unsigned int *p)
     {
         for (k = 3; k >= 0; k--)
         {
-            printf("%d \t", bitsMatrix[i][k]);
             hex = (hex << 1) | bitsMatrix[i][k];
         }
-        puts("");
         sprintf(hexstr, "%X", hex);
         hex = 0;
         if (i == 5)
@@ -95,7 +93,6 @@ char *word_to_hex(unsigned int *p)
         else
             strcat(totalhexstr, hexstr);
     }
-    puts("");
     totalhexstr[6] = 0;
 
     return totalhexstr;

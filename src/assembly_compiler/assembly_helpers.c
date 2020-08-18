@@ -89,13 +89,13 @@ static int is_valid_instraction(char *str)
 void get_command(char *str, int *index, commands *cmd)
 {
     char *opname = NULL;
-    int opindex, i = 1;
+    int op_index, i = 1;
     /* check if the command starts with '.' to know its an instruction */
     int isInstruction = str[*index] == '.';
 
     while (str[*index])
     {
-        /* read all laters and allocate dynamicly space untill or instruction is found or assembly operations */
+        /* read all laters and allocate dynamicly space until or instruction is found or assembly operations */
         opname = realloc(opname, sizeof(char) * i);
         if (!opname)
             memory_allocation_fail();
@@ -116,17 +116,17 @@ void get_command(char *str, int *index, commands *cmd)
         }
         else
         {
-            opindex = get_operation_from_operations(opname);
-            if (opindex > -1)
+            op_index = get_operation_from_operations(opname);
+            if (op_index > -1)
             {
                 /* operation found. assign to object and set object type to EXECUTE  */
                 cmd->op.opname = (char *)malloc(sizeof(char) * i);
                 if (!cmd->op.opname)
                     memory_allocation_fail();
 
-                strcpy(cmd->op.opname, operations[opindex].opname);
-                cmd->op.funct = operations[opindex].funct;
-                cmd->op.opcode = operations[opindex].opcode;
+                strcpy(cmd->op.opname, operations[op_index].opname);
+                cmd->op.funct = operations[op_index].funct;
+                cmd->op.opcode = operations[op_index].opcode;
                 cmd->command_type = EXECUTE;
                 break;
             }
@@ -170,7 +170,7 @@ commands extract_command_data(char *str)
     int index = 0, strLen = strlen(str);
     char *label = (char *)malloc(sizeof(char) * strLen);
 
-    /* initilize the struct */
+    /* initialize the struct */
     command.instruction = (char *)malloc(sizeof(char) * 10);
     command.op.opname = (char *)malloc(sizeof(char) * 10);
     command.var1 = NULL;
@@ -220,23 +220,55 @@ commands extract_command_data(char *str)
 
 typedef struct extra_data_helper
 {
-
-    unsigned int e : 1;
-    unsigned int a : 1;
-    unsigned int r : 1;
+    unsigned int type : 3;
     unsigned int data : MAX_BIT_SIZE;
 } extra_data_helper;
 
+static char *hex_to_six_chars(char *hex)
+{
+    int i;
+    char *str = (char *)malloc(sizeof(char) * 6);
+    for (i = 0; i < 6; i++)
+    {
+        if (i < strlen(hex))
+        {
+            str[5 - i] = hex[strlen(hex) - 1 - i];
+        }
+        else
+        {
+            str[5 - i] = '0';
+        }
+    }
+    str[i + 1] = 0;
+    return str;
+}
 static char *extra_data_data_to_hex(extra_data data)
 {
-    extra_data_helper rdh;
-    rdh.data = data.data;
-    printf("DATA = %d\n", data.data);
-    printf("DATA = %d\n", rdh.data);
-    rdh.a = data.a;
-    rdh.e = data.e;
-    rdh.r = data.r;
-    return word_to_hex(CONVER_BIT_FIELD_TO_UNSIGNED_INT(rdh));
+    int num = data.data;
+    char *hex = (char *)malloc(sizeof(char) * 10);
+    if (!hex)
+        memory_allocation_fail();
+
+    if (data.a)
+    {
+        num *= 2;
+        num += 1;
+        num *= 4;
+    }
+    else if (data.r)
+    {
+        num *= 4;
+        num += 1;
+        num *= 2;
+    }
+    else
+    {
+        num *= 8;
+        num += 1;
+    }
+
+    sprintf(hex, "%X", num);
+    return hex_to_six_chars(hex);
 }
 char *create_object_file_str(memory_row *memory, data_row *data)
 {
@@ -275,14 +307,16 @@ char *create_object_file_str(memory_row *memory, data_row *data)
         }
     }
 
-    for (j = 0; j < dc; j++)
+    for (j = 0; j < (dc - 1); j++)
     {
         sprintf(address, "%d", data[j].address);
         COPY_STRING_BY_CHAR(str, address, i, str_count);
         str[str_count++] = '\t';
         sprintf(hex, "%X", data[j].data);
-        COPY_STRING_BY_CHAR(str, hex, i, str_count);
+        COPY_STRING_BY_CHAR(str, hex_to_six_chars(hex), i, str_count);
         str[str_count++] = '\n';
     }
+    
+    str[str_count] = 0;
     return str;
 }
