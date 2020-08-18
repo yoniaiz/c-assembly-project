@@ -1,12 +1,11 @@
 #include "header.h"
 
 #define CONVER_BIT_FIELD_TO_UNSIGNED_INT(BF) (unsigned int *)(&BF)
-#define APPEND_DATA_TO_HEX_CONVERTION(ADDRESS_STR, DATA_ADDRESS, MAIN, I, HEX, DATA, STR_COUNT) \
-    sprintf(ADDRESS_STR, "%d", DATA_ADDRESS);                                                   \
-    COPY_STRING_BY_CHAR(MAIN, ADDRESS_STR, I, STR_COUNT);                                       \
-    MAIN[STR_COUNT++] = '\t';                                                                   \
-    strcpy(HEX, DATA);                                                                          \
-    COPY_STRING_BY_CHAR(MAIN, HEX, I, STR_COUNT);                                               \
+#define APPEND_DATA_TO_HEX_CONVERTION(ADDRESS_STR, DATA_ADDRESS, MAIN, I, DATA, STR_COUNT) \
+    sprintf(ADDRESS_STR, "%d", DATA_ADDRESS);                                              \
+    COPY_STRING_BY_CHAR(MAIN, ADDRESS_STR, I, STR_COUNT);                                  \
+    MAIN[STR_COUNT++] = '\t';                                                              \
+    COPY_STRING_BY_CHAR(MAIN, DATA, I, STR_COUNT);                                         \
     MAIN[STR_COUNT++] = '\n';
 
 #define MAX_LABEL_LENGTH 31
@@ -292,30 +291,26 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     {
         if (memory[j].address)
         {
-            APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].address, str, i, hex, word_to_hex(CONVER_BIT_FIELD_TO_UNSIGNED_INT(memory[j].wr)), str_count);
+            APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].address, str, i, word_to_hex(CONVER_BIT_FIELD_TO_UNSIGNED_INT(memory[j].wr)), str_count);
 
             if (memory[j].extra_origin_data.address && memory[j].extra_origin_data.data)
             {
-                APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_origin_data.address, str, i, hex, extra_data_data_to_hex(memory[j].extra_origin_data), str_count);
+                APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_origin_data.address, str, i, extra_data_data_to_hex(memory[j].extra_origin_data), str_count);
             }
 
             if (memory[j].extra_dest_data.address && memory[j].extra_dest_data.data)
             {
-                APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_dest_data.address, str, i, hex, extra_data_data_to_hex(memory[j].extra_dest_data), str_count);
+                APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_dest_data.address, str, i, extra_data_data_to_hex(memory[j].extra_dest_data), str_count);
             }
         }
     }
 
     for (j = 0; j < (dc - 1); j++)
     {
-        sprintf(address, "%d", data[j].address);
-        COPY_STRING_BY_CHAR(str, address, i, str_count);
-        str[str_count++] = '\t';
         sprintf(hex, "%X", data[j].data);
-        COPY_STRING_BY_CHAR(str, hex_to_six_chars(hex), i, str_count);
-        str[str_count++] = '\n';
+        APPEND_DATA_TO_HEX_CONVERTION(address, data[j].address, str, i, hex_to_six_chars(hex), str_count);
     }
-    
+
     str[str_count] = 0;
     return str;
 }
