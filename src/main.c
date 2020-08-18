@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
 
     initialize_prog();
     parse_file_to_array_of_strings(argv[1], &lines);
-    ofs = complie_file_input_to_assembly(lines);
-    printf("%s \n", ofs.entryF);
+    complie_file_input_to_assembly(lines);
     return 1;
 }

@@ -1,4 +1,16 @@
 #include "header.h"
+static void writeFile(char *filename, char *filecontent)
+{
+    FILE *f;
+    if (!(f = fopen(filename, "w")))
+    {
+        file_fail();
+    }
+
+    fputs(filecontent, f);
+
+    fclose(f);
+}
 
 void read_file(char *path, char **content)
 {
@@ -24,6 +36,12 @@ void read_file(char *path, char **content)
     /* copy file to string and close file */
     fread(*content, 1, length, assembly);
     fclose(assembly);
+}
+
+void writeFiles(output_files_strs ofs)
+{
+    if (ofs.objectF)
+        writeFile("assembly.obj", ofs.objectF);
 }
 
 /* read the file into a string and split it by enters to create a array of strings without spacess */

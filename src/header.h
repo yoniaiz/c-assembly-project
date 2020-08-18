@@ -156,7 +156,7 @@ void split_input_by_enters_and_remove_spaces(char *str, char ***lines);
 int calculate_total_size_object_file_str_size();
 /* FILE HANDLER */
 void parse_file_to_array_of_strings(char *path, char ***lines);
-
+void writeFiles(output_files_strs ofs);
 /* INITIALIZERS */
 void initialize_prog();
 
@@ -166,4 +166,4 @@ void file_fail();
 void no_args_fail();
 
 /* Assembly compiler */
-output_files_strs complie_file_input_to_assembly(char **lines);
+void complie_file_input_to_assembly(char **lines);
