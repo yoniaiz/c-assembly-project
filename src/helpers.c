@@ -1,5 +1,10 @@
 #include "header.h"
+extern int ic;
 
+int calculate_total_size_object_file_str_size()
+{
+    return sizeof(char) * ((MAX_HEX_SIZE * 2 + 1) * (ic - IC_INIT) + 1);
+}
 void remove_spaces(char *str_with_spaces)
 {
     int length, i = 0, j = 0;

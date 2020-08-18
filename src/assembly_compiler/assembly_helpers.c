@@ -10,7 +10,6 @@
     MAIN[STR_COUNT++] = '\n';
 
 #define MAX_LABEL_LENGTH 31
-#define MAX_HEX_SIZE 6
 
 /* operetions memory */
 extern int ic;
@@ -227,16 +226,16 @@ typedef struct extra_data_helper
 static char *hex_to_six_chars(char *hex)
 {
     int i;
-    char *str = (char *)malloc(sizeof(char) * 6);
-    for (i = 0; i < 6; i++)
+    char *str = (char *)malloc(sizeof(char) * MAX_HEX_SIZE);
+    for (i = 0; i < MAX_HEX_SIZE; i++)
     {
         if (i < strlen(hex))
         {
-            str[5 - i] = hex[strlen(hex) - 1 - i];
+            str[MAX_HEX_SIZE - 1 - i] = hex[strlen(hex) - 1 - i];
         }
         else
         {
-            str[5 - i] = '0';
+            str[MAX_HEX_SIZE - 1 - i] = '0';
         }
     }
     str[i + 1] = 0;
@@ -275,7 +274,7 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     int data_size = dc, str_count = 0, i, j;
     int total_size = (ic - IC_INIT) + data_size;
     char data_size_str[10], total_size_str[10], hex[MAX_HEX_SIZE], address[MAX_HEX_SIZE] = {0};
-    char *str = (char *)malloc(sizeof(char) * ((MAX_HEX_SIZE * 2 + 1) * total_size + 1));
+    char *str = (char *)malloc(calculate_total_size_object_file_str_size());
     if (!str)
         memory_allocation_fail();
 

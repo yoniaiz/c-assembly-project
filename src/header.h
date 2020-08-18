@@ -7,6 +7,7 @@
 #define MAX_BIT_SIZE 21
 #define OPERATIONS_LENGTH 16
 #define REGISTERS_AMOUNT 6
+#define MAX_HEX_SIZE 6
 
 #define IC_INIT 100
 #define DC_INIT 0
@@ -149,6 +150,7 @@ int decimal_to_binary_unassigned_base_2(int decimalnum);
 int decimal_to_hex(int num);
 char *word_to_hex(unsigned int* p);
 void split_input_by_enters_and_remove_spaces(char *str, char ***lines);
+int calculate_total_size_object_file_str_size();
 /* FILE HANDLER */
 void parse_file_to_array_of_strings(char *path, char ***lines);
 
