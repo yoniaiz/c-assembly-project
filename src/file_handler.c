@@ -12,12 +12,20 @@ static void writeFile(char *filename, char *filecontent)
     fclose(f);
 }
 
+static char *filename(char *filename)
+{
+    static char name[20];
+    if (strlen(filename))
+        strcpy(name, filename);
+    return name;
+}
+
 void read_file(char *path, char **content)
 {
     FILE *assembly;
     long length;
-
-    if (!(assembly = fopen(strcat(path,".txt"), "r")))
+    filename(path);
+    if (!(assembly = fopen(strcat(path, ".txt"), "r")))
     {
         file_fail();
     }
@@ -41,7 +49,7 @@ void read_file(char *path, char **content)
 void writeFiles(output_files_strs ofs)
 {
     if (ofs.objectF)
-        writeFile("assembly.obj", ofs.objectF);
+        writeFile(strcat(filename(""), ".obj"), ofs.objectF);
 }
 
 /* read the file into a string and split it by enters to create a array of strings without spacess */
