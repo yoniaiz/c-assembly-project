@@ -118,8 +118,9 @@ static ADDRESSINGS get_addressing_method(ADDRESSINGS valid_addressings[], char *
         return RELATIVE_ADDRESSING;
     else if (reg_idx)
         return IMMEDIATE_REGISTER_ADDRESSING;
-    else
+    else if(var)
         return DIRECT_ADDRESSING;
+    else return -1;
 }
 
 static int get_register_val(int reg_idx)

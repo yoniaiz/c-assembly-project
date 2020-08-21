@@ -1,7 +1,7 @@
 #include "header.h"
 
 #define UPDATE_ADDRESS_IF_EXTERN(ADDRESS) \
-    if (ADDRESS.address == 0)             \
+    if (ADDRESS.data == 0)                \
     {                                     \
         ADDRESS.a = 0;                    \
         ADDRESS.r = 0;                    \
@@ -14,14 +14,12 @@ extern register_st registers[6];
 
 static int is_extra_data(int addressing)
 {
-    return addressing != IMMEDIATE_REGISTER_ADDRESSING && addressing != IMMEDIATE_ADDRESSING;
+    return (addressing == DIRECT_ADDRESSING || addressing == RELATIVE_ADDRESSING);
 }
 
 static int get_extra_data_data(ADDRESSINGS addressing, int address, char *var, symbol_row *symbol_table)
 {
     int i = 0;
-    if (!var)
-        return 0;
 
     if (addressing == DIRECT_ADDRESSING)
     {
@@ -56,6 +54,7 @@ void second_loop(memory_row *memory, symbol_row *symbol_table)
             if (is_extra_data(memory[i].wr.origin_addressing))
             {
                 memory[i].extra_origin_data.data = get_extra_data_data(memory[i].wr.origin_addressing, memory[i].address, memory[i].cmd.var1, symbol_table);
+                printf("%d\n", memory[i].extra_origin_data.data);
                 UPDATE_ADDRESS_IF_EXTERN(memory[i].extra_origin_data);
             }
             if (is_extra_data(memory[i].wr.dest_addressing))

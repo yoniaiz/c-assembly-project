@@ -10,10 +10,13 @@ static void twoLoopsAlgorithm(commands *cmd)
     if (!data || !memory || !symbol_table)
         memory_allocation_fail();
 
+    /*Two loop assembly compile algorithm*/
     first_loop(cmd, &data, &memory, &symbol_table);
-    free(cmd);
     second_loop(memory, symbol_table);
+    free(cmd);
     free(symbol_table);
+
+    /* get parsed assembly to hex code to write to files */
     ofs.objectF = (char *)malloc(calculate_total_size_object_file_str_size());
     if (!ofs.objectF)
         memory_allocation_fail();
