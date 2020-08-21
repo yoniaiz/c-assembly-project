@@ -1,5 +1,37 @@
 #include "../header.h"
 
+typedef struct extra_data
+{
+    unsigned int e : 1;
+    unsigned int r : 1;
+    unsigned int a : 1;
+    unsigned int data : MAX_BIT_SIZE;
+    int address;
+} extra_data;
+typedef struct memory
+{
+    unsigned int address : MAX_BIT_SIZE;
+    word wr;
+    commands cmd;
+    extra_data extra_dest_data;
+    extra_data extra_origin_data;
+} memory_row;
+
+typedef struct data
+{
+    int address;
+    unsigned int data : MAX_BIT_SIZE;
+    unsigned int next : MAX_BIT_SIZE;
+} data_row;
+
+typedef struct symbol
+{
+    char *label;
+    unsigned int address : MAX_BIT_SIZE;
+    COMMAND_TYPE command_type;
+    BOOLEAN isExtern;
+} symbol_row;
+
 /* Main Logic */
 void first_loop(
     commands *cmd,
