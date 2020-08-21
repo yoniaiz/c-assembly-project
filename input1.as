@@ -1,4 +1,5 @@
 .extern X
+.entry EXTERN
 MAIN:   add r3, LIST
 LOOP:   prn #48
         lea STR, r6
@@ -7,6 +8,7 @@ LOOP:   prn #48
 EXTERN: dec X
         bne END
         cmp K, #-6
+.entry STR
         add X, X
         bne &END
         dec K

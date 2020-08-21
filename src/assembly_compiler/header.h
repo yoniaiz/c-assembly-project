@@ -30,6 +30,7 @@ typedef struct symbol
     unsigned int address : MAX_BIT_SIZE;
     COMMAND_TYPE command_type;
     BOOLEAN isExtern;
+    BOOLEAN is_entry;
 } symbol_row;
 
 /* Main Logic */

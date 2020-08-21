@@ -16,6 +16,9 @@ static void twoLoopsAlgorithm(commands *cmd)
     free(cmd);
 
     ofs.externalF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
+    if (!ofs.externalF)
+        memory_allocation_fail();
+
     strcpy(ofs.externalF, create_external_file_str(symbol_table, memory));
 
     free(symbol_table);
@@ -38,7 +41,7 @@ void complie_file_input_to_assembly(char **lines)
     {
         if (lines[i][0] != ';')
         {
-            cmd = (commands *)realloc(cmd, sizeof(commands) * (commands_count + 1));
+            cmd = (commands *)realloc(cmd, sizeof(commands) * ((commands_count + 1) * 150));
             if (!cmd)
             {
                 memory_allocation_fail();

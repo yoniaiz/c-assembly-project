@@ -118,9 +118,10 @@ static ADDRESSINGS get_addressing_method(ADDRESSINGS valid_addressings[], char *
         return RELATIVE_ADDRESSING;
     else if (reg_idx)
         return IMMEDIATE_REGISTER_ADDRESSING;
-    else if(var)
+    else if (var)
         return DIRECT_ADDRESSING;
-    else return -1;
+    else
+        return -1;
 }
 
 static int get_register_val(int reg_idx)
@@ -185,32 +186,40 @@ void first_loop(
     memory_row **memory,
     symbol_row **symbol_table)
 {
-    int i = 0, symbols_length = 0;
-    int is_extern = FALSE;
+    char *entries[20];
+    int i = 0, j = 0, symbols_length = 0, entries_count = 0;
+    int is_extern = FALSE, is_entry = FALSE;
     while (cmd[i].instruction || cmd[i].op.opname)
     {
-        is_extern = COMP_STRING(cmd[i].instruction, EXTERN);
-        if (cmd[i].label || is_extern)
+        is_entry = COMP_STRING(cmd[i].instruction, ENTRY);
+        if (is_entry)
         {
-            add_to_symbol_table(cmd[i], symbol_table, symbols_length, is_extern);
-            symbols_length++;
-        }
-
-        if (cmd[i].command_type)
-        {
-            add_operation_to_memory(cmd[i], memory);
+            entries[entries_count] = (char *)malloc(sizeof(char *) * strlen(cmd[i].var1));
+            strcpy(entries[entries_count], cmd[i].var1);
+            entries_count++;
         }
         else
         {
-            /* handel instruction */
-            if (cmd[i].var1 && !is_extern)
+            is_extern = COMP_STRING(cmd[i].instruction, EXTERN);
+
+            if (cmd[i].label || is_extern)
             {
-                /* handle data and string types  */
-                add_instroction_to_data(cmd[i], data);
+                add_to_symbol_table(cmd[i], symbol_table, symbols_length, is_extern);
+                symbols_length++;
+            }
+
+            if (cmd[i].command_type)
+            {
+                add_operation_to_memory(cmd[i], memory);
             }
             else
             {
-                /* handle extern and entry types */
+                /* handel instruction */
+                if (cmd[i].var1 && !is_extern)
+                {
+                    /* handle data and string types  */
+                    add_instroction_to_data(cmd[i], data);
+                }
             }
         }
 
@@ -228,6 +237,14 @@ void first_loop(
         if ((*symbol_table)[i].command_type == INSTRACTION && !(*symbol_table)[i].isExtern)
         {
             (*symbol_table)[i].address += ic;
+        }
+
+        for (j = 0; j < entries_count; j++)
+        {
+            if (COMP_STRING((*symbol_table)[i].label, entries[j]))
+            {
+                (*symbol_table)[i].is_entry = TRUE;
+            }
         }
     }
 }
