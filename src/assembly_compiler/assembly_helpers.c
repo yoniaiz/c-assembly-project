@@ -317,3 +317,16 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     str[str_count] = 0;
     return str;
 }
+
+char *create_external_file_str(symbol_row *symbol_table, memory_row *memory_table)
+{
+    int i = 0;
+    char *str = (char *)malloc(calculate_total_size_object_file_str_size() / 2);
+    while (symbol_table[i].label)
+    {
+        if (symbol_table[i].isExtern)
+        {
+        }
+        i++;
+    }
+}

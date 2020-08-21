@@ -14,6 +14,9 @@ static void twoLoopsAlgorithm(commands *cmd)
     first_loop(cmd, &data, &memory, &symbol_table);
     second_loop(memory, symbol_table);
     free(cmd);
+
+    ofs.externalF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
+    create_external_file_str(symbol_table, memory);
     free(symbol_table);
 
     /* get parsed assembly to hex code to write to files */
