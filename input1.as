@@ -7,6 +7,7 @@ LOOP:   prn #48
 EXTERN: dec X
         bne END
         cmp K, #-6
+        add X, X
         bne &END
         dec K
         jmp &LOOP
