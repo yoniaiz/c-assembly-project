@@ -7,17 +7,17 @@
     MAIN[STR_COUNT++] = '\t';                                                           \
     COPY_STRING_BY_CHAR(MAIN, DATA, STR_COUNT);                                         \
     MAIN[STR_COUNT++] = '\n';
-#define ADD_EXTERN_TO_STR(STR, STR_COUNT, LABEL, ADDRESS) \
-    {                                                     \
-        char *address = (char *)malloc(sizeof(char) * 6); \
-        if (!address)                                     \
-            memory_allocation_fail();                     \
-        COPY_STRING_BY_CHAR(STR, LABEL, STR_COUNT);       \
-        STR[STR_COUNT++] = '\t';                          \
-        sprintf(address, "%d", ADDRESS);                  \
-        COPY_STRING_BY_CHAR(STR, address, STR_COUNT);     \
-        STR[STR_COUNT++] = '\n';                          \
-        free(address);                                    \
+#define ADD_LABEL_WITH_ADDRESS(STR, STR_COUNT, LABEL, ADDRESS) \
+    {                                                          \
+        char *address = (char *)malloc(sizeof(char) * 6);      \
+        if (!address)                                          \
+            memory_allocation_fail();                          \
+        COPY_STRING_BY_CHAR(STR, LABEL, STR_COUNT);            \
+        STR[STR_COUNT++] = '\t';                               \
+        sprintf(address, "%d", ADDRESS);                       \
+        COPY_STRING_BY_CHAR(STR, address, STR_COUNT);          \
+        STR[STR_COUNT++] = '\n';                               \
+        free(address);                                         \
     }
 
 #define MAX_LABEL_LENGTH 31
@@ -343,16 +343,35 @@ char *create_external_file_str(symbol_row *symbol_table, memory_row *memory_tabl
             {
                 if (memory_table[j].cmd.var1 && COMP_STRING(memory_table[j].cmd.var1, symbol_table[i].label))
                 {
-                    ADD_EXTERN_TO_STR(str, strcount, symbol_table[i].label, memory_table[j].extra_origin_data.address);
+                    ADD_LABEL_WITH_ADDRESS(str, strcount, symbol_table[i].label, memory_table[j].extra_origin_data.address);
                 }
                 if (memory_table[j].cmd.var2 && COMP_STRING(memory_table[j].cmd.var2, symbol_table[i].label))
                 {
-                    ADD_EXTERN_TO_STR(str, strcount, symbol_table[i].label, memory_table[j].extra_dest_data.address);
+                    ADD_LABEL_WITH_ADDRESS(str, strcount, symbol_table[i].label, memory_table[j].extra_dest_data.address);
                 }
             }
         }
         i++;
     }
     str[strcount] = 0;
+    return str;
+}
+
+char *create_entry_file_str(symbol_row *symbol_table)
+{
+    char *str = (char *)malloc(calculate_total_size_object_file_str_size() / 2);
+    int i = 0, str_count = 0;
+    while (symbol_table[i].label)
+    {
+        printf("lab = %s is = %d \n", symbol_table[i].label, symbol_table[i].is_entry);
+        if (symbol_table[i].is_entry)
+        {
+            ADD_LABEL_WITH_ADDRESS(str, str_count, symbol_table[i].label, symbol_table[i].address);
+        }
+
+        i++;
+    }
+
+    str[str_count] = 0;
     return str;
 }

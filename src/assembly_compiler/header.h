@@ -48,5 +48,6 @@ char *get_label(char *str, int *index);
 void get_command(char *str, int *index, commands *cmd);
 char *get_variable(char *str, int *index, int first_var);
 int get_register(char *var);
+char *create_entry_file_str(symbol_row *symbol_table);
 char *create_object_file_str(memory_row *memory, data_row *data);
 char *create_external_file_str(symbol_row *symbol_table, memory_row *memory_table);
