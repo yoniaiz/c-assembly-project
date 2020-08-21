@@ -7,6 +7,15 @@
     MAIN[STR_COUNT++] = '\t';                                                           \
     COPY_STRING_BY_CHAR(MAIN, DATA, STR_COUNT);                                         \
     MAIN[STR_COUNT++] = '\n';
+#define ADD_EXTERN_TO_STR(STR, STR_COUNT, LABEL, ADDRESS)           \
+    {                                                               \
+        char *hex = (char *)malloc(sizeof(char) * 6);               \
+        COPY_STRING_BY_CHAR(STR, LABEL, STR_COUNT);                 \
+        STR[STR_COUNT++] = '\t';                                    \
+        sprintf(hex, "%X", ADDRESS);                                \
+        COPY_STRING_BY_CHAR(STR, hex_to_six_chars(hex), STR_COUNT); \
+        STR[STR_COUNT++] = '\n';                                    \
+    }
 
 #define MAX_LABEL_LENGTH 31
 
@@ -320,25 +329,27 @@ char *create_object_file_str(memory_row *memory, data_row *data)
 
 char *create_external_file_str(symbol_row *symbol_table, memory_row *memory_table)
 {
-    int i = 0, j = 0;
+    int i = 0, j = 0, strcount = 0;
     char *str = (char *)malloc(calculate_total_size_object_file_str_size() / 2);
+
     while (symbol_table[i].label)
     {
         if (symbol_table[i].isExtern)
         {
-            printf("%s\n", symbol_table[i].label);
             for (j = 0; j < (ic - IC_INIT); j++)
             {
-                if (
-                    (memory_table[j].cmd.var1 && COMP_STRING(memory_table[j].cmd.var1, symbol_table[i].label)) ||
-                    (memory_table[j].cmd.var2 && COMP_STRING(memory_table[j].cmd.var2, symbol_table[i].label)))
+                if (memory_table[j].cmd.var1 && COMP_STRING(memory_table[j].cmd.var1, symbol_table[i].label))
                 {
-                    printf("FOUND\n");
+                    ADD_EXTERN_TO_STR(str, strcount, symbol_table[i].label, memory_table[j].extra_origin_data.address);
+                }
+                if (memory_table[j].cmd.var2 && COMP_STRING(memory_table[j].cmd.var2, symbol_table[i].label))
+                {
+                    ADD_EXTERN_TO_STR(str, strcount, symbol_table[i].label, memory_table[j].extra_dest_data.address);
                 }
             }
         }
         i++;
     }
-
+    str[strcount] = 0;
     return str;
 }

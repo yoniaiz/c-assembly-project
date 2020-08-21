@@ -16,9 +16,9 @@ static void twoLoopsAlgorithm(commands *cmd)
     free(cmd);
 
     ofs.externalF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
-    create_external_file_str(symbol_table, memory);
-    free(symbol_table);
+    strcpy(ofs.externalF, create_external_file_str(symbol_table, memory));
 
+    free(symbol_table);
     /* get parsed assembly to hex code to write to files */
     ofs.objectF = (char *)malloc(calculate_total_size_object_file_str_size());
     if (!ofs.objectF)
