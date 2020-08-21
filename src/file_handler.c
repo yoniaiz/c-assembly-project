@@ -25,7 +25,7 @@ void read_file(char *path, char **content)
     FILE *assembly;
     long length;
     filename(path);
-    if (!(assembly = fopen(strcat(path, ".txt"), "r")))
+    if (!(assembly = fopen(strcat(path, ".as"), "r")))
     {
         file_fail();
     }
