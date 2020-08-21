@@ -320,13 +320,25 @@ char *create_object_file_str(memory_row *memory, data_row *data)
 
 char *create_external_file_str(symbol_row *symbol_table, memory_row *memory_table)
 {
-    int i = 0;
+    int i = 0, j = 0;
     char *str = (char *)malloc(calculate_total_size_object_file_str_size() / 2);
     while (symbol_table[i].label)
     {
         if (symbol_table[i].isExtern)
         {
+            printf("%s\n", symbol_table[i].label);
+            for (j = 0; j < (ic - IC_INIT); j++)
+            {
+                if (
+                    (memory_table[j].cmd.var1 && COMP_STRING(memory_table[j].cmd.var1, symbol_table[i].label)) ||
+                    (memory_table[j].cmd.var2 && COMP_STRING(memory_table[j].cmd.var2, symbol_table[i].label)))
+                {
+                    printf("FOUND\n");
+                }
+            }
         }
         i++;
     }
+
+    return str;
 }
