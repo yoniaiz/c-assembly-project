@@ -52,16 +52,21 @@ void writeFiles(output_files_strs ofs)
     char fileext[24];
     char fileent[24];
 
-    if (ofs.objectF)
+    if (strlen(ofs.objectF))
     {
         strcpy(fileobj, filename(""));
         writeFile(strcat(fileobj, ".obj"), ofs.objectF);
     }
 
-    if (ofs.externalF)
+    if (strlen(ofs.externalF))
     {
         strcpy(fileext, filename(""));
         writeFile(strcat(fileext, ".ext"), ofs.externalF);
+    }
+    if (strlen(ofs.entryF))
+    {
+        strcpy(fileent, filename(""));
+        writeFile(strcat(fileent, ".ent"), ofs.entryF);
     }
 }
 

@@ -1,3 +1,5 @@
 ofiles
 assembly
 *.obj
+*.ext
+*.ent
