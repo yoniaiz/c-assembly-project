@@ -32,6 +32,7 @@ static void twoLoopsAlgorithm(commands *cmd)
 
     strcpy(ofs.objectF, create_object_file_str(memory, data));
     free(data);
+    free(memory);
     writeFiles(ofs);
 }
 
