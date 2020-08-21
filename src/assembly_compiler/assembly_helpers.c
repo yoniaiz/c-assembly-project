@@ -7,14 +7,14 @@
     MAIN[STR_COUNT++] = '\t';                                                           \
     COPY_STRING_BY_CHAR(MAIN, DATA, STR_COUNT);                                         \
     MAIN[STR_COUNT++] = '\n';
-#define ADD_EXTERN_TO_STR(STR, STR_COUNT, LABEL, ADDRESS)           \
-    {                                                               \
-        char *hex = (char *)malloc(sizeof(char) * 6);               \
-        COPY_STRING_BY_CHAR(STR, LABEL, STR_COUNT);                 \
-        STR[STR_COUNT++] = '\t';                                    \
-        sprintf(hex, "%X", ADDRESS);                                \
-        COPY_STRING_BY_CHAR(STR, hex_to_six_chars(hex), STR_COUNT); \
-        STR[STR_COUNT++] = '\n';                                    \
+#define ADD_EXTERN_TO_STR(STR, STR_COUNT, LABEL, ADDRESS) \
+    {                                                     \
+        char *address = (char *)malloc(sizeof(char) * 6); \
+        COPY_STRING_BY_CHAR(STR, LABEL, STR_COUNT);       \
+        STR[STR_COUNT++] = '\t';                          \
+        sprintf(address, "%d", ADDRESS);                  \
+        COPY_STRING_BY_CHAR(STR, address, STR_COUNT);     \
+        STR[STR_COUNT++] = '\n';                          \
     }
 
 #define MAX_LABEL_LENGTH 31

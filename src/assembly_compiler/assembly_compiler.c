@@ -25,8 +25,6 @@ static void twoLoopsAlgorithm(commands *cmd)
         memory_allocation_fail();
 
     strcpy(ofs.objectF, create_object_file_str(memory, data));
-    /*ofs.externalF = create_external_file_str();
-    ofs.entryF = create_entry_file_str();*/
     free(data);
     writeFiles(ofs);
 }
