@@ -11,15 +11,17 @@ operation operations[OPERATIONS_LENGTH];
 
 int main(int argc, char *argv[])
 {
+    int i = 1;
     char **lines = NULL;
-    output_files_strs ofs;
     if (argc == 1)
     {
         no_args_fail();
     }
-
-    initialize_prog();
-    parse_file_to_array_of_strings(argv[1], &lines);
-    complie_file_input_to_assembly(lines);
+    for (; i < argc; i++)
+    {
+        initialize_prog();
+        parse_file_to_array_of_strings(argv[i], &lines);
+        complie_file_input_to_assembly(lines);
+    }
     return 1;
 }

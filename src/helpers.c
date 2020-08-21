@@ -32,9 +32,9 @@ void remove_spaces(char *str_with_spaces)
     strcpy(str_with_spaces, str_without_spaces);
 }
 
-void split_input_by_enters_and_remove_spaces(char *str, char ***lines)
+void split_input_by_symbol_and_remove_spaces(char *str, char ***lines, char *symbol)
 {
-    char *token = strtok(str, "\n");
+    char *token = strtok(str, symbol);
     int n_spaces = 0, i;
 
     /* split string and append tokens to 'res' */
@@ -47,7 +47,7 @@ void split_input_by_enters_and_remove_spaces(char *str, char ***lines)
 
         (*lines)[n_spaces - 1] = token;
 
-        token = strtok(NULL, "\n");
+        token = strtok(NULL, symbol);
     }
 
     /* realloc one extra element for the last NULL */

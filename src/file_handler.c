@@ -17,7 +17,7 @@ void read_file(char *path, char **content)
     FILE *assembly;
     long length;
 
-    if (!(assembly = fopen(path, "r")))
+    if (!(assembly = fopen(strcat(path,".txt"), "r")))
     {
         file_fail();
     }
@@ -47,7 +47,7 @@ void writeFiles(output_files_strs ofs)
 /* read the file into a string and split it by enters to create a array of strings without spacess */
 void parse_file_to_array_of_strings(char *path, char ***lines)
 {
-    char *content = 0;
+    char *content = NULL;
     read_file(path, &content);
-    split_input_by_enters_and_remove_spaces(content, lines);
+    split_input_by_symbol_and_remove_spaces(content, lines, "\n");
 }
