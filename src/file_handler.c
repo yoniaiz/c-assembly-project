@@ -48,8 +48,11 @@ void read_file(char *path, char **content)
 
 void writeFiles(output_files_strs ofs)
 {
+    char name[20];
+    strcpy(name, filename(""));
+
     if (ofs.objectF)
-        writeFile(strcat(filename(""), ".obj"), ofs.objectF);
+        writeFile(strcat(name, ".obj"), ofs.objectF);
 }
 
 /* read the file into a string and split it by enters to create a array of strings without spacess */
