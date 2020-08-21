@@ -53,8 +53,8 @@ void second_loop(memory_row *memory, symbol_row *symbol_table)
         {
             if (is_extra_data(memory[i].wr.origin_addressing))
             {
+                /*TODO CHACK IF NOT EXTERNAL*/
                 memory[i].extra_origin_data.data = get_extra_data_data(memory[i].wr.origin_addressing, memory[i].address, memory[i].cmd.var1, symbol_table);
-                printf("%d\n", memory[i].extra_origin_data.data);
                 UPDATE_ADDRESS_IF_EXTERN(memory[i].extra_origin_data);
             }
             if (is_extra_data(memory[i].wr.dest_addressing))

@@ -296,7 +296,7 @@ char *create_object_file_str(memory_row *memory, data_row *data)
         {
             APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].address, str, word_to_hex(CONVER_BIT_FIELD_TO_UNSIGNED_INT(memory[j].wr)), str_count);
 
-            if (memory[j].extra_origin_data.address && memory[j].extra_origin_data.data)
+            if (memory[j].extra_origin_data.address && (memory[j].extra_origin_data.data || memory[j].extra_origin_data.e))
             {
                 APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_origin_data.address, str, extra_data_data_to_hex(memory[j].extra_origin_data), str_count);
             }
