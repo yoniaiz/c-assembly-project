@@ -110,6 +110,7 @@ void get_command(char *str, int *index, commands *cmd)
 
             strcpy(cmd->instruction, opname);
             cmd->command_type = INSTRACTION;
+            (*index)++;
             break;
         }
         else
@@ -121,11 +122,11 @@ void get_command(char *str, int *index, commands *cmd)
                 cmd->op.opname = (char *)malloc(sizeof(char) * i);
                 if (!cmd->op.opname)
                     memory_allocation_fail();
-
                 strcpy(cmd->op.opname, operations[op_index].opname);
                 cmd->op.funct = operations[op_index].funct;
                 cmd->op.opcode = operations[op_index].opcode;
                 cmd->command_type = EXECUTE;
+                (*index)++;
                 break;
             }
         }
@@ -193,26 +194,26 @@ commands extract_command_data(char *str)
 
     /* get operation if exist from string and add to struct from last index */
     get_command(str, &index, &command);
-    /* skip last later of the command */
-    index += index < (strLen - 1);
 
-    /* get first var */
-    command.var1 = (char *)malloc(sizeof(char) * (strLen - index));
-    if (!command.var1)
-        memory_allocation_fail();
-
-    strcpy(command.var1, get_variable(str, &index, command.command_type));
-
-    if (index < strLen)
+    if (strLen != index)
     {
-        /* copy var 2 */
-        command.var2 = (char *)malloc(sizeof(char) * (strLen - index));
-        if (!command.var2)
+        /* get first var */
+        command.var1 = (char *)malloc(sizeof(char) * (strLen - index));
+        if (!command.var1)
             memory_allocation_fail();
 
-        strcpy(command.var2, get_variable(str, &index, FALSE));
-    }
+        strcpy(command.var1, get_variable(str, &index, command.command_type));
 
+        if (index < strLen)
+        {
+            /* copy var 2 */
+            command.var2 = (char *)malloc(sizeof(char) * (strLen - index));
+            if (!command.var2)
+                memory_allocation_fail();
+
+            strcpy(command.var2, get_variable(str, &index, FALSE));
+        }
+    }
     return command;
 }
 

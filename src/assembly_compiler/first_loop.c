@@ -5,17 +5,17 @@ extern int ic;
 extern int dc;
 extern register_st registers[6];
 
-static void add_to_symbol_table(commands command, symbol_row **symbol_table, int symbols_len)
+static void add_to_symbol_table(commands command, symbol_row **symbol_table, int symbols_len, int is_extern)
 {
     *symbol_table = (symbol_row *)realloc(*symbol_table, sizeof(symbol_row) * (symbols_len + 1));
     if (!*symbol_table)
         memory_allocation_fail();
 
-    (*symbol_table)[symbols_len].label = (char *)malloc(sizeof(char) * strlen(command.label));
-    strcpy((*symbol_table)[symbols_len].label, command.label);
-    (*symbol_table)[symbols_len].address = command.command_type ? ic : dc;
+    (*symbol_table)[symbols_len].label = (char *)malloc(sizeof(char) * strlen(is_extern ? command.var1 : command.label));
+    strcpy((*symbol_table)[symbols_len].label, is_extern ? command.var1 : command.label);
+    (*symbol_table)[symbols_len].address = is_extern ? 0 : command.command_type ? ic : dc;
     (*symbol_table)[symbols_len].command_type = command.command_type;
-    (*symbol_table)[symbols_len].isExtern = command.command_type ? FALSE : COMP_STRING(command.instruction, EXTERN);
+    (*symbol_table)[symbols_len].isExtern = is_extern;
 }
 
 static void add_instroction_to_data(commands command, data_row **data)
@@ -185,13 +185,13 @@ void first_loop(
     symbol_row **symbol_table)
 {
     int i = 0, symbols_length = 0;
-
+    int is_extern = FALSE;
     while (cmd[i].instruction || cmd[i].op.opname)
     {
-
-        if (cmd[i].label)
+        is_extern = COMP_STRING(cmd[i].instruction, EXTERN);
+        if (cmd[i].label || is_extern)
         {
-            add_to_symbol_table(cmd[i], symbol_table, symbols_length);
+            add_to_symbol_table(cmd[i], symbol_table, symbols_length, is_extern);
             symbols_length++;
         }
 
@@ -202,7 +202,7 @@ void first_loop(
         else
         {
             /* handel instruction */
-            if (cmd[i].var1)
+            if (cmd[i].var1 && !is_extern)
             {
                 /* handle data and string types  */
                 add_instroction_to_data(cmd[i], data);
@@ -223,7 +223,8 @@ void first_loop(
 
     for (i = 0; i < symbols_length; i++)
     {
-        if ((*symbol_table)[i].command_type == INSTRACTION)
+        /*TODO CHANGE EXTERN TYPE*/
+        if ((*symbol_table)[i].command_type == INSTRACTION && !(*symbol_table)[i].isExtern)
         {
             (*symbol_table)[i].address += ic;
         }

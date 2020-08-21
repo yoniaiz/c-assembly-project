@@ -14,7 +14,6 @@ static void twoLoopsAlgorithm(commands *cmd)
     free(cmd);
     second_loop(memory, symbol_table);
     free(symbol_table);
-
     ofs.objectF = (char *)malloc(calculate_total_size_object_file_str_size());
     if (!ofs.objectF)
         memory_allocation_fail();
