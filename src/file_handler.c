@@ -68,6 +68,10 @@ void writeFiles(output_files_strs ofs)
         strcpy(fileent, filename(""));
         writeFile(strcat(fileent, ".ent"), ofs.entryF);
     }
+
+    free(ofs.entryF);
+    free(ofs.externalF);
+    free(ofs.objectF);
 }
 
 /* read the file into a string and split it by enters to create a array of strings without spacess */
