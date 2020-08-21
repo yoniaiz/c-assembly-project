@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     for (; i < argc; i++)
     {
         char **lines = NULL;
+        printf("%s i = %d\n",argv[i], i);
         ic = IC_INIT;
         dc = DC_INIT;
         parse_file_to_array_of_strings(argv[i], &lines);

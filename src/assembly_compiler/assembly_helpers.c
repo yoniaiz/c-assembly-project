@@ -363,7 +363,6 @@ char *create_entry_file_str(symbol_row *symbol_table)
     int i = 0, str_count = 0;
     while (symbol_table[i].label)
     {
-        printf("lab = %s is = %d \n", symbol_table[i].label, symbol_table[i].is_entry);
         if (symbol_table[i].is_entry)
         {
             ADD_LABEL_WITH_ADDRESS(str, str_count, symbol_table[i].label, symbol_table[i].address);

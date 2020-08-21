@@ -238,7 +238,7 @@ void first_loop(
         {
             (*symbol_table)[i].address += ic;
         }
-
+        (*symbol_table)[i].is_entry = FALSE;
         for (j = 0; j < entries_count; j++)
         {
             if (COMP_STRING((*symbol_table)[i].label, entries[j]))

@@ -23,9 +23,11 @@ static char *filename(char *filename)
 void read_file(char *path, char **content)
 {
     FILE *assembly;
+    char name[20];
     long length;
-    filename(path);
-    if (!(assembly = fopen(strcat(path, ".as"), "r")))
+    
+    strcpy(name, filename(path));
+    if (!(assembly = fopen(strcat(name, ".as"), "r")))
     {
         file_fail();
     }
