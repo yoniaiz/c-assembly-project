@@ -99,10 +99,12 @@ static int is_valid_instraction(char *str)
 
 void get_command(char *str, commands *cmd)
 {
-    char *opname = (char *)malloc(sizeof(char) * 10);
     int op_index, i = 0;
     /* check if the command starts with '.' to know its an instruction */
     int is_instruction = str[i] == '.';
+    char *opname = (char *)malloc(sizeof(char) * strlen(str));
+    if (!opname)
+        memory_allocation_fail();
 
     COPY_STRING_BY_CHAR(opname, str, i);
     opname[i] = 0;
@@ -140,22 +142,20 @@ void get_command(char *str, commands *cmd)
 
 char *get_variable(char *str, int first_var)
 {
-    char *var = NULL;
     int i = 0;
-    while (str[i])
-    {
-        /* iterate on str until: if its first var and found ',' or until and of string */
-        if (first_var && str[i] == ',')
-        {
-            return var;
-        }
-        var = realloc(var, sizeof(char) * (i + 1));
-        if (!var)
-            memory_allocation_fail();
+    char *var = (char *)malloc(sizeof(char) * strlen(str));
+    if (!var)
+        memory_allocation_fail();
 
-        var[i] = str[i];
-        var[i + 1] = 0;
-        i++;
+    COPY_STRING_BY_CHAR(var, str, i);
+
+    if (first_var && (var[i - 1] == ','))
+    {
+        var[i - 1] = 0;
+    }
+    else
+    {
+        var[i] = 0;
     }
 
     return var;
