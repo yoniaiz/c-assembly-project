@@ -5,6 +5,17 @@ extern int ic;
 extern int dc;
 extern register_st registers[6];
 
+static void check_if_symbol_not_exists(symbol_row **symbol_table, char *label, int symbols_len)
+{
+    int i = 0;
+    if (symbols_len == 0)
+        return;
+        
+    for (; i < symbols_len; i++)
+        if (COMP_STRING(label, (*symbol_table)[i].label))
+            symbol_fail(label);
+}
+
 static void add_to_symbol_table(commands command, symbol_row **symbol_table, int symbols_len, int is_extern)
 {
     *symbol_table = (symbol_row *)realloc(*symbol_table, sizeof(symbol_row) * (symbols_len + 1));
@@ -189,12 +200,20 @@ void first_loop(
     char *entries[20];
     int i = 0, j = 0, symbols_length = 0, entries_count = 0;
     int is_extern = FALSE, is_entry = FALSE;
+
     while (cmd[i].instruction || cmd[i].op.opname)
     {
         is_entry = COMP_STRING(cmd[i].instruction, ENTRY);
         if (is_entry)
         {
+            /* add every entry decleration to array for later use */
             entries[entries_count] = (char *)malloc(sizeof(char *) * strlen(cmd[i].var1));
+            if (!entries[entries_count])
+                memory_allocation_fail();
+
+            if (!cmd[i].var1)
+                entry_fail();
+
             strcpy(entries[entries_count], cmd[i].var1);
             entries_count++;
         }
@@ -204,6 +223,7 @@ void first_loop(
 
             if (cmd[i].label || is_extern)
             {
+                check_if_symbol_not_exists(symbol_table, cmd[i].label, symbols_length);
                 add_to_symbol_table(cmd[i], symbol_table, symbols_length, is_extern);
                 symbols_length++;
             }

@@ -6,6 +6,8 @@
 #define INVALID_COMMAND "Please provide valid "
 #define INVALID_OPERATION "assembly command!\n"
 #define INVALID_INSTRUCATION "assembly instroction!\n"
+#define ENTRY_FAIL "Entry should have a variable!\n"
+#define SYMBOL_ERROR "You already declared a label named "
 
 void memory_allocation_fail()
 {
@@ -29,5 +31,17 @@ void invalid_command(BOOLEAN is_instrucation)
 {
     printf(INVALID_COMMAND);
     printf(is_instrucation ? INVALID_INSTRUCATION : INVALID_OPERATION);
+    exit(EXIT_FAILURE);
+}
+
+void entry_fail()
+{
+    printf(ENTRY_FAIL);
+    exit(EXIT_FAILURE);
+}
+
+void symbol_fail(char *label)
+{
+    printf("%s%s \n", SYMBOL_ERROR, label);
     exit(EXIT_FAILURE);
 }

@@ -129,7 +129,9 @@ void parse_file_to_array_of_strings(char *path, char ****lines);
 void initialize_prog();
 /* Messages */
 void file_fail();
+void entry_fail();
 void no_args_fail();
+void symbol_fail(char *label);
 void memory_allocation_fail();
 void invalid_command(BOOLEAN is_instrucation);
 /* Assembly compiler */

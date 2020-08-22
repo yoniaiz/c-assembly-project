@@ -195,7 +195,7 @@ commands extract_command_data(char **str)
     if (str[index])
     {
         /* get first var */
-        command.var1 = (char *)malloc(sizeof(char) * 15);
+        command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
         if (!command.var1)
             memory_allocation_fail();
 
@@ -204,7 +204,7 @@ commands extract_command_data(char **str)
         if (str[index])
         {
             /* copy var 2 */
-            command.var2 = (char *)malloc(sizeof(char) * 15);
+            command.var2 = (char *)malloc(sizeof(char) * strlen(str[index]));
             if (!command.var2)
                 memory_allocation_fail();
 

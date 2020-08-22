@@ -9,7 +9,6 @@ static void twoLoopsAlgorithm(commands *cmd)
 
     if (!data || !memory || !symbol_table)
         memory_allocation_fail();
-
     /*Two loop assembly compile algorithm*/
     first_loop(cmd, &data, &memory, &symbol_table);
     second_loop(memory, symbol_table);
