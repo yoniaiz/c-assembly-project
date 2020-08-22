@@ -79,7 +79,6 @@ void split_content_by_enters_and_spaces(char *str, char ****lines)
                 memory_allocation_fail();
 
             /* assign every string then is spited by space to main array */
-            remove_spaces(line[j]);
             strcpy((*lines)[i][j], line[j]);
             j++;
         }

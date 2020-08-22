@@ -99,58 +99,38 @@ static int is_valid_instraction(char *str)
 
 void get_command(char *str, commands *cmd)
 {
-    char *opname = NULL;
+    char *opname = (char *)malloc(sizeof(char) * 10);
     int op_index, i = 0;
-    int valid_command = FALSE;
     /* check if the command starts with '.' to know its an instruction */
     int is_instruction = str[i] == '.';
 
-    while (str[i])
+    COPY_STRING_BY_CHAR(opname, str, i);
+    opname[i] = 0;
+
+    op_index = get_operation_from_operations(opname);
+    if (op_index > -1)
     {
-        /* read all laters and allocate dynamicly space until or instruction is found or assembly operations */
-        opname = realloc(opname, sizeof(char) * (i + 1));
-        if (!opname)
+        /* operation found. assign to object and set object type to EXECUTE  */
+        cmd->op.opname = (char *)malloc(sizeof(char) * i);
+        if (!cmd->op.opname)
+            memory_allocation_fail();
+        strcpy(cmd->op.opname, operations[op_index].opname);
+        cmd->op.funct = operations[op_index].funct;
+        cmd->op.opcode = operations[op_index].opcode;
+        cmd->command_type = EXECUTE;
+        (i)++;
+    }
+    else if (is_valid_instraction(opname))
+    {
+        cmd->instruction = (char *)malloc(sizeof(char) * i);
+        if (!cmd->instruction)
             memory_allocation_fail();
 
-        opname[i] = str[i];
-        opname[i + 1] = 0;
-
-        if (is_instruction && is_valid_instraction(opname))
-        {
-            /* instoction found. assign to object and set object type to INSTRACTION  */
-            cmd->instruction = (char *)malloc(sizeof(char) * i);
-            if (!cmd->instruction)
-                memory_allocation_fail();
-
-            strcpy(cmd->instruction, opname);
-            cmd->command_type = INSTRACTION;
-            (i)++;
-            valid_command = TRUE;
-            break;
-        }
-        else
-        {
-            op_index = get_operation_from_operations(opname);
-            if (op_index > -1)
-            {
-                /* operation found. assign to object and set object type to EXECUTE  */
-                cmd->op.opname = (char *)malloc(sizeof(char) * i);
-                if (!cmd->op.opname)
-                    memory_allocation_fail();
-                strcpy(cmd->op.opname, operations[op_index].opname);
-                cmd->op.funct = operations[op_index].funct;
-                cmd->op.opcode = operations[op_index].opcode;
-                cmd->command_type = EXECUTE;
-                (i)++;
-                valid_command = TRUE;
-                break;
-            }
-        }
-
-        i++;
+        strcpy(cmd->instruction, opname);
+        cmd->command_type = INSTRACTION;
+        (i)++;
     }
-
-    if (!valid_command)
+    else
     {
         /* if command is not valid */
         invalid_command(is_instruction);
