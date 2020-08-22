@@ -36,20 +36,20 @@ static void twoLoopsAlgorithm(commands *cmd)
     writeFiles(ofs);
 }
 
-void complie_file_input_to_assembly(char **lines)
+void complie_file_input_to_assembly(char ***lines)
 {
     int i = 0, commands_count = 0;
     commands *cmd = NULL;
 
     while (lines[i])
     {
-        if (lines[i][0] != ';')
+        if (lines[i][0][0] != COMMENT_START_SYMBOL)
         {
+            /* if line is not comment */
             cmd = (commands *)realloc(cmd, sizeof(commands) * ((commands_count + 1) * 150));
             if (!cmd)
-            {
                 memory_allocation_fail();
-            }
+
             cmd[commands_count] = extract_command_data(lines[i]);
             commands_count++;
         }

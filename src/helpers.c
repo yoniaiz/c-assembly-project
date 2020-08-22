@@ -53,14 +53,28 @@ void split_input_by_symbol_and_remove_spaces(char *str, char ***lines, char *sym
     /* realloc one extra element for the last NULL */
     *lines = realloc(*lines, sizeof(char *) * (n_spaces + 1));
     (*lines)[n_spaces] = 0;
+}
 
-    for (i = 0; i < n_spaces; i++)
+void split_content_by_enters_and_spaces(char *str, char ****lines)
+{
+    int i = 0, j = 0;
+    char **inner = NULL;
+    char **line = NULL;
+    split_input_by_symbol_and_remove_spaces(str, &inner, "\n");
+    while (inner[i])
     {
-        /* remove spaces from all array items */
-        if ((*lines)[i])
+        split_input_by_symbol_and_remove_spaces(inner[i], &line, " ");
+        (*lines) = (char ***)realloc(*lines, sizeof(char **) * (i + 1));
+        (*lines)[i] = (char **)malloc(sizeof(char *) * 50);
+        while (line[j])
         {
-            remove_spaces((*lines)[i]);
+            (*lines)[i][j] = (char *)malloc(sizeof(char) * 20);
+            remove_spaces(line[j]);
+            strcpy((*lines)[i][j], line[j]);
+            j++;
         }
+        j = 0;
+        i++;
     }
 }
 

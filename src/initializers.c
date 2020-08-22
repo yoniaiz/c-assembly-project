@@ -12,6 +12,7 @@ static operation create_op(
     ADDRESSINGS legal_origin_addresing[3])
 {
     int i;
+    /* updating command */
     operation new_operation;
     new_operation.opcode = code;
     new_operation.funct = funct;
@@ -23,6 +24,7 @@ static operation create_op(
 
     for (i = 0; i < 3; i++)
     {
+        /* updating commands legal addressing methods */
         new_operation.legal_dest_addressing[i] = legal_dest_addresing ? legal_dest_addresing[i] : -1;
         new_operation.legal_origin_addressing[i] = legal_origin_addresing ? legal_origin_addresing[i] : -1;
     }
@@ -41,6 +43,7 @@ static void initialize_registers()
 
 static void initialize_operations()
 {
+    /* all addressing methods */
     ADDRESSINGS di[3] = {DIRECT_ADDRESSING, IMMEDIATE_REGISTER_ADDRESSING, -1};
     ADDRESSINGS dii[3] = {DIRECT_ADDRESSING, IMMEDIATE_ADDRESSING, IMMEDIATE_REGISTER_ADDRESSING};
     ADDRESSINGS d[3] = {DIRECT_ADDRESSING, -1, -1};

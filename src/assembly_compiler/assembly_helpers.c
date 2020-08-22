@@ -58,22 +58,23 @@ int get_register(char *var)
     return FALSE;
 }
 
-char *get_label(char *str, int *index)
+char *get_label(char *str)
 {
     char *label = NULL;
+    int i = 0;
 
-    while (str[*index] && str[*index] != ':' && *index != MAX_LABEL_LENGTH)
+    while (str[i] && str[i] != ':' && i != MAX_LABEL_LENGTH)
     {
         /* copy characters to and of str or char = ":" (and of label) of index = 31 (max char length) */
-        label = realloc(label, sizeof(char) * ((*index) + 1));
+        label = realloc(label, sizeof(char) * ((i) + 1));
         if (!label)
             memory_allocation_fail();
 
-        label[*index] = str[*index];
-        (*index)++;
+        label[i] = str[i];
+        i++;
     }
 
-    if (str[*index] != ':' || *index == MAX_LABEL_LENGTH)
+    if (str[i] != ':' || i == MAX_LABEL_LENGTH)
     {
         /* label not found free space */
         free(label);
@@ -81,11 +82,11 @@ char *get_label(char *str, int *index)
     else
     {
         /* last string char 0 */
-        label = realloc(label, sizeof(char) * (*index + 1));
+        label = realloc(label, sizeof(char) * (i + 1));
         if (!label)
             memory_allocation_fail();
 
-        label[*index] = 0;
+        label[i] = 0;
     }
 
     return label;
@@ -96,24 +97,25 @@ static int is_valid_instraction(char *str)
     return COMP_STRING(str, DATA) || COMP_STRING(str, STRING) || COMP_STRING(str, EXTERN) || COMP_STRING(str, ENTRY);
 }
 
-void get_command(char *str, int *index, commands *cmd)
+void get_command(char *str, commands *cmd)
 {
     char *opname = NULL;
-    int op_index, i = 1;
+    int op_index, i = 0;
+    int valid_command = FALSE;
     /* check if the command starts with '.' to know its an instruction */
-    int isInstruction = str[*index] == '.';
+    int is_instruction = str[i] == '.';
 
-    while (str[*index])
+    while (str[i])
     {
         /* read all laters and allocate dynamicly space until or instruction is found or assembly operations */
-        opname = realloc(opname, sizeof(char) * i);
+        opname = realloc(opname, sizeof(char) * (i + 1));
         if (!opname)
             memory_allocation_fail();
 
-        opname[i - 1] = str[*index];
-        opname[i] = 0;
+        opname[i] = str[i];
+        opname[i + 1] = 0;
 
-        if (isInstruction && is_valid_instraction(opname))
+        if (is_instruction && is_valid_instraction(opname))
         {
             /* instoction found. assign to object and set object type to INSTRACTION  */
             cmd->instruction = (char *)malloc(sizeof(char) * i);
@@ -122,7 +124,8 @@ void get_command(char *str, int *index, commands *cmd)
 
             strcpy(cmd->instruction, opname);
             cmd->command_type = INSTRACTION;
-            (*index)++;
+            (i)++;
+            valid_command = TRUE;
             break;
         }
         else
@@ -138,48 +141,51 @@ void get_command(char *str, int *index, commands *cmd)
                 cmd->op.funct = operations[op_index].funct;
                 cmd->op.opcode = operations[op_index].opcode;
                 cmd->command_type = EXECUTE;
-                (*index)++;
+                (i)++;
+                valid_command = TRUE;
                 break;
             }
         }
 
-        (*index)++;
         i++;
     }
 
+    if (!valid_command)
+    {
+        /* if command is not valid */
+        invalid_command(is_instruction);
+    }
     free(opname);
 }
 
-char *get_variable(char *str, int *index, int first_var)
+char *get_variable(char *str, int first_var)
 {
     char *var = NULL;
-    int i = 1;
-    while (str[*index])
+    int i = 0;
+    while (str[i])
     {
         /* iterate on str until: if its first var and found ',' or until and of string */
-        if (first_var && str[*index] == ',')
+        if (first_var && str[i] == ',')
         {
-            (*index)++;
             return var;
         }
-        var = realloc(var, sizeof(char) * i);
+        var = realloc(var, sizeof(char) * (i + 1));
         if (!var)
             memory_allocation_fail();
 
-        var[i - 1] = str[*index];
-        var[i] = 0;
-        (*index)++;
+        var[i] = str[i];
+        var[i + 1] = 0;
         i++;
     }
 
     return var;
 }
 
-commands extract_command_data(char *str)
+commands extract_command_data(char **str)
 {
     commands command;
-    int index = 0, strLen = strlen(str);
-    char *label = (char *)malloc(sizeof(char) * strLen);
+    int index = 0;
+    char *label = (char *)malloc(sizeof(char) * MAX_LABEL_LENGTH);
 
     /* initialize the struct */
     command.instruction = (char *)malloc(sizeof(char) * 10);
@@ -188,7 +194,7 @@ commands extract_command_data(char *str)
     command.var2 = NULL;
 
     /* get label if exist from string and add to struct*/
-    strcpy(label, get_label(str, &index));
+    strcpy(label, get_label(str[index]));
     if (strlen(label))
     {
         index++;
@@ -203,29 +209,29 @@ commands extract_command_data(char *str)
     }
 
     free(label);
-
     /* get operation if exist from string and add to struct from last index */
-    get_command(str, &index, &command);
+    get_command(str[index++], &command);
 
-    if (strLen != index)
+    if (str[index])
     {
         /* get first var */
-        command.var1 = (char *)malloc(sizeof(char) * (strLen - index));
+        command.var1 = (char *)malloc(sizeof(char) * 15);
         if (!command.var1)
             memory_allocation_fail();
 
-        strcpy(command.var1, get_variable(str, &index, command.command_type));
+        strcpy(command.var1, get_variable(str[index++], command.command_type));
 
-        if (index < strLen)
+        if (str[index])
         {
             /* copy var 2 */
-            command.var2 = (char *)malloc(sizeof(char) * (strLen - index));
+            command.var2 = (char *)malloc(sizeof(char) * 15);
             if (!command.var2)
                 memory_allocation_fail();
 
-            strcpy(command.var2, get_variable(str, &index, FALSE));
+            strcpy(command.var2, get_variable(str[index], FALSE));
         }
     }
+
     return command;
 }
 

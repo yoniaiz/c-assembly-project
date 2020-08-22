@@ -11,6 +11,7 @@
 
 #define IC_INIT 100
 #define DC_INIT 0
+#define COMMENT_START_SYMBOL ';'
 
 /* macros */
 #define COMP_STRING(X, Y) (strcmp(X, Y) == 0 ? TRUE : FALSE)
@@ -116,21 +117,21 @@ typedef struct st
 } register_st;
 
 /* Helpers */
-int decimal_to_binary_unassigned_base_2(int decimalnum);
 int decimal_to_hex(int num);
 char *word_to_hex(unsigned int *p);
-void split_input_by_symbol_and_remove_spaces(char *str, char ***lines, char *symbol);
 int calculate_total_size_object_file_str_size();
+int decimal_to_binary_unassigned_base_2(int decimalnum);
+void split_content_by_enters_and_spaces(char *str, char ****lines);
+void split_input_by_symbol_and_remove_spaces(char *str, char ***lines, char *symbol);
 /* FILE HANDLER */
-void parse_file_to_array_of_strings(char *path, char ***lines);
 void writeFiles(output_files_strs ofs);
+void parse_file_to_array_of_strings(char *path, char ****lines);
 /* INITIALIZERS */
 void initialize_prog();
-
 /* Messages */
-void memory_allocation_fail();
 void file_fail();
 void no_args_fail();
-
+void memory_allocation_fail();
+void invalid_command(BOOLEAN is_instrucation);
 /* Assembly compiler */
-void complie_file_input_to_assembly(char **lines);
+void complie_file_input_to_assembly(char ***lines);

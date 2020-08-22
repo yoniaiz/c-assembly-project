@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     initialize_prog();
     for (; i < argc; i++)
     {
-        char **lines = NULL;
+        char ***lines = NULL;
         ic = IC_INIT;
         dc = DC_INIT;
         parse_file_to_array_of_strings(argv[i], &lines);
