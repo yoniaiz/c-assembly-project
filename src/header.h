@@ -87,8 +87,8 @@ typedef struct op
     int opcode;
     int funct;
     char *opname;
-    ADDRESSINGS legal_dest_addressing[3];
-    ADDRESSINGS legal_origin_addressing[3];
+    int *legal_dest_addressing;
+    int *legal_origin_addressing;
 } operation;
 
 /* command after parsing the file */
@@ -131,6 +131,7 @@ void initialize_prog();
 void file_fail();
 void entry_fail();
 void no_args_fail();
+void invalid_addressing();
 void symbol_fail(char *label);
 void memory_allocation_fail();
 void invalid_command(BOOLEAN is_instrucation);

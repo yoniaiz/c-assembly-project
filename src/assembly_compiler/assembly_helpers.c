@@ -113,14 +113,8 @@ void get_command(char *str, commands *cmd)
     if (op_index > -1)
     {
         /* operation found. assign to object and set object type to EXECUTE  */
-        cmd->op.opname = (char *)malloc(sizeof(char) * i);
-        if (!cmd->op.opname)
-            memory_allocation_fail();
-        strcpy(cmd->op.opname, operations[op_index].opname);
-        cmd->op.funct = operations[op_index].funct;
-        cmd->op.opcode = operations[op_index].opcode;
+        cmd->op = operations[op_index];
         cmd->command_type = EXECUTE;
-        (i)++;
     }
     else if (is_valid_instraction(opname))
     {
@@ -130,7 +124,6 @@ void get_command(char *str, commands *cmd)
 
         strcpy(cmd->instruction, opname);
         cmd->command_type = INSTRACTION;
-        (i)++;
     }
     else
     {

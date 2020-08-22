@@ -17,6 +17,9 @@ static operation create_op(
     new_operation.opcode = code;
     new_operation.funct = funct;
     new_operation.opname = (char *)malloc(sizeof(char) * strlen(name));
+    new_operation.legal_dest_addressing = (int *)malloc(sizeof(int) * 9);
+    new_operation.legal_origin_addressing = (int *)malloc(sizeof(int) * 9);
+
     if (!new_operation.opname)
         memory_allocation_fail();
 
@@ -43,6 +46,7 @@ static void initialize_registers()
 
 static void initialize_operations()
 {
+    int i = 0;
     /* all addressing methods */
     ADDRESSINGS di[3] = {DIRECT_ADDRESSING, IMMEDIATE_REGISTER_ADDRESSING, -1};
     ADDRESSINGS dii[3] = {DIRECT_ADDRESSING, IMMEDIATE_ADDRESSING, IMMEDIATE_REGISTER_ADDRESSING};
@@ -65,7 +69,7 @@ static void initialize_operations()
     operations[12] = create_op(12, 0, RED, di, NULL);
     operations[13] = create_op(13, 0, PRN, dii, NULL);
     operations[14] = create_op(14, 0, RTS, NULL, NULL);
-    operations[15] = create_op(15, 0, STOP, NULL, NULL);
+    operations[15] = create_op(15, 0, STOP, NULL, NULL); 
 }
 
 void initialize_prog()

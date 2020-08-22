@@ -10,7 +10,7 @@ static void check_if_symbol_not_exists(symbol_row **symbol_table, char *label, i
     int i = 0;
     if (symbols_len == 0)
         return;
-        
+
     for (; i < symbols_len; i++)
         if (COMP_STRING(label, (*symbol_table)[i].label))
             symbol_fail(label);
@@ -121,18 +121,31 @@ static void add_instroction_to_data(commands command, data_row **data)
     }
 }
 
-static ADDRESSINGS get_addressing_method(ADDRESSINGS valid_addressings[], char *var, int reg_idx)
+static ADDRESSINGS get_addressing_method(int valid_addressings[], char *var, int reg_idx)
 {
+    int i = 0, valid_addressing = FALSE;
+    int addressing_type = -1;
+
     if (var && var[0] == '#')
-        return IMMEDIATE_ADDRESSING;
+        addressing_type = IMMEDIATE_ADDRESSING;
     else if (var && var[0] == '&')
-        return RELATIVE_ADDRESSING;
+        addressing_type = RELATIVE_ADDRESSING;
     else if (reg_idx)
-        return IMMEDIATE_REGISTER_ADDRESSING;
+        addressing_type = IMMEDIATE_REGISTER_ADDRESSING;
     else if (var)
-        return DIRECT_ADDRESSING;
-    else
-        return -1;
+        addressing_type = DIRECT_ADDRESSING;
+
+    for (; i < 3; i++)
+    {
+        printf("%d %d\n", valid_addressings[i], addressing_type);
+        if (valid_addressings[i] == addressing_type)
+            valid_addressing = TRUE;
+    }
+
+    if (!valid_addressing)
+        invalid_addressing();
+
+    return addressing_type;
 }
 
 static int get_register_val(int reg_idx)
@@ -146,8 +159,8 @@ static word create_word(commands command)
     word wr;
 
     wr.opcode = command.op.opcode;
-    wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var1, reg_origin_idx);
     wr.origin_register = get_register_val(reg_origin_idx);
+    wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var1, reg_origin_idx);
     wr.dest_addressing = get_addressing_method(command.op.legal_dest_addressing, command.var2, reg_dest_idx);
     wr.dest_register = get_register_val(reg_dest_idx);
     wr.funct = command.op.funct;
