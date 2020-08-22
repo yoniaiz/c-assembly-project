@@ -82,5 +82,4 @@ void parse_file_to_array_of_strings(char *path, char ****lines)
     char *content = NULL;
     read_file(path, &content);
     split_content_by_enters_and_spaces(content, lines);
-    /*split_input_by_symbol_and_remove_spaces(content, lines, "\n");*/
 }

@@ -32,10 +32,10 @@ void remove_spaces(char *str_with_spaces)
     strcpy(str_with_spaces, str_without_spaces);
 }
 
-void split_input_by_symbol_and_remove_spaces(char *str, char ***lines, char *symbol)
+void split_input_by_symbol(char *str, char ***lines, char *symbol)
 {
     char *token = strtok(str, symbol);
-    int n_spaces = 0, i;
+    int n_spaces = 0;
 
     /* split string and append tokens to 'res' */
     while (token)
@@ -60,19 +60,30 @@ void split_content_by_enters_and_spaces(char *str, char ****lines)
     int i = 0, j = 0;
     char **inner = NULL;
     char **line = NULL;
-    split_input_by_symbol_and_remove_spaces(str, &inner, "\n");
+
+    /* spliting content by enters to array of string */
+    split_input_by_symbol(str, &inner, "\n");
     while (inner[i])
     {
-        split_input_by_symbol_and_remove_spaces(inner[i], &line, " ");
+        /* spliting the array of string every string by space and assign to lines param to create array of array of strings */
+        split_input_by_symbol(inner[i], &line, " ");
         (*lines) = (char ***)realloc(*lines, sizeof(char **) * (i + 1));
         (*lines)[i] = (char **)malloc(sizeof(char *) * 50);
+        if (!(*line) || !(*lines)[i])
+            memory_allocation_fail();
+
         while (line[j])
         {
             (*lines)[i][j] = (char *)malloc(sizeof(char) * 20);
+            if (!(*lines)[i][j])
+                memory_allocation_fail();
+
+            /* assign every string then is spited by space to main array */
             remove_spaces(line[j]);
             strcpy((*lines)[i][j], line[j]);
             j++;
         }
+
         j = 0;
         i++;
     }

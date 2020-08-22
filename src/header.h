@@ -122,7 +122,6 @@ char *word_to_hex(unsigned int *p);
 int calculate_total_size_object_file_str_size();
 int decimal_to_binary_unassigned_base_2(int decimalnum);
 void split_content_by_enters_and_spaces(char *str, char ****lines);
-void split_input_by_symbol_and_remove_spaces(char *str, char ***lines, char *symbol);
 /* FILE HANDLER */
 void writeFiles(output_files_strs ofs);
 void parse_file_to_array_of_strings(char *path, char ****lines);
