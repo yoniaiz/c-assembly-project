@@ -187,21 +187,37 @@ commands extract_command_data(char **str)
 
     if (str[index])
     {
-        /* get first var */
-        command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
-        if (!command.var1)
-            memory_allocation_fail();
-
-        strcpy(command.var1, get_variable(str[index++], command.command_type));
-
-        if (str[index])
+        if (!command.command_type)
         {
+            command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
+            if (!command.var1)
+                memory_allocation_fail();
+
+            strcpy(command.var1, get_variable(str[index++], FALSE));
+        }
+        else if (str[index + 1])
+        {
+            /* get first var */
+            command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
+            if (!command.var1)
+                memory_allocation_fail();
+
+            strcpy(command.var1, get_variable(str[index++], TRUE));
+
             /* copy var 2 */
             command.var2 = (char *)malloc(sizeof(char) * strlen(str[index]));
             if (!command.var2)
                 memory_allocation_fail();
 
             strcpy(command.var2, get_variable(str[index], FALSE));
+        }
+        else
+        {
+            command.var2 = (char *)malloc(sizeof(char) * strlen(str[index]));
+            if (!command.var2)
+                memory_allocation_fail();
+
+            strcpy(command.var2, get_variable(str[index], TRUE));
         }
     }
 
@@ -316,7 +332,7 @@ char *create_external_file_str(symbol_row *symbol_table, memory_row *memory_tabl
 
     while (symbol_table[i].label)
     {
-        if (symbol_table[i].isExtern)
+        if (symbol_table[i].is_extern)
         {
             for (j = 0; j < (ic - IC_INIT); j++)
             {

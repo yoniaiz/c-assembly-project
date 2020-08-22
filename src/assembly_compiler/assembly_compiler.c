@@ -13,7 +13,7 @@ static void twoLoopsAlgorithm(commands *cmd)
     first_loop(cmd, &data, &memory, &symbol_table);
     second_loop(memory, symbol_table);
     free(cmd);
-
+    
     ofs.externalF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
     ofs.entryF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
 
@@ -21,6 +21,7 @@ static void twoLoopsAlgorithm(commands *cmd)
         memory_allocation_fail();
 
     strcpy(ofs.externalF, create_external_file_str(symbol_table, memory));
+    return;
     strcpy(ofs.entryF, create_entry_file_str(symbol_table));
 
     free(symbol_table);
@@ -42,7 +43,7 @@ void complie_file_input_to_assembly(char ***lines)
 
     while (lines[i])
     {
-        if (lines[i][0][0] != COMMENT_START_SYMBOL)
+        if (lines[i][0] && lines[i][0][0] != COMMENT_START_SYMBOL)
         {
             /* if line is not comment */
             cmd = (commands *)realloc(cmd, sizeof(commands) * ((commands_count + 1) * 150));

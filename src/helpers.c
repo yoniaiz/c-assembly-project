@@ -86,6 +86,9 @@ void split_content_by_enters_and_spaces(char *str, char ****lines)
         j = 0;
         i++;
     }
+
+    (*lines) = (char ***)realloc(*lines, sizeof(char **) * (i + 1));
+    (*lines)[i] = NULL;
 }
 
 char *word_to_hex(unsigned int *p)

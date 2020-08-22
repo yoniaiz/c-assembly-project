@@ -26,7 +26,7 @@ static void add_to_symbol_table(commands command, symbol_row **symbol_table, int
     strcpy((*symbol_table)[symbols_len].label, is_extern ? command.var1 : command.label);
     (*symbol_table)[symbols_len].address = is_extern ? 0 : command.command_type ? ic : dc;
     (*symbol_table)[symbols_len].command_type = command.command_type;
-    (*symbol_table)[symbols_len].isExtern = is_extern;
+    (*symbol_table)[symbols_len].is_extern = is_extern;
 }
 
 static void add_instroction_to_data(commands command, data_row **data)
@@ -137,7 +137,6 @@ static ADDRESSINGS get_addressing_method(int valid_addressings[], char *var, int
 
     for (; i < 3; i++)
     {
-        printf("%d %d\n", valid_addressings[i], addressing_type);
         if (valid_addressings[i] == addressing_type)
             valid_addressing = TRUE;
     }
@@ -266,12 +265,11 @@ void first_loop(
 
     for (i = 0; i < symbols_length; i++)
     {
-        /*TODO CHANGE EXTERN TYPE*/
-        if ((*symbol_table)[i].command_type == INSTRACTION && !(*symbol_table)[i].isExtern)
+        (*symbol_table)[i].is_entry = FALSE;
+        if ((*symbol_table)[i].command_type == INSTRACTION && !(*symbol_table)[i].is_extern)
         {
             (*symbol_table)[i].address += ic;
         }
-        (*symbol_table)[i].is_entry = FALSE;
         for (j = 0; j < entries_count; j++)
         {
             if (COMP_STRING((*symbol_table)[i].label, entries[j]))
@@ -280,4 +278,7 @@ void first_loop(
             }
         }
     }
+
+    /* prevent over iteration on symbols */
+    (*symbol_table)[i].label = NULL;
 }
