@@ -59,7 +59,7 @@ void second_loop(memory_row *memory, symbol_row *symbol_table)
             if (memory[i].wr.dest_addressing == DIRECT_ADDRESSING)
             {
                 memory[i].extra_dest_data.data = handle_direct_addressing_extra_data(memory[i].cmd.var2, symbol_table);
-                UPDATE_ADDRESS_IF_EXTERN(memory[i].extra_origin_data);
+                UPDATE_ADDRESS_IF_EXTERN(memory[i].extra_dest_data);
             }
             else if (memory[i].wr.dest_addressing == RELATIVE_ADDRESSING)
             {

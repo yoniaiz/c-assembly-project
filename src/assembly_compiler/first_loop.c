@@ -64,8 +64,8 @@ static void add_instroction_to_data(commands command, data_row **data)
             is_data = TRUE;
             if (command.var1[i] == ',')
             {
-                if (i == 0 || i == (strlen(command.var1) - 1) || command.var1[i + 1] == ','){
-                    printf("%s\n", command.var1);
+                if (i == 0 || i == (strlen(command.var1) - 1) || command.var1[i + 1] == ',')
+                {
                     invalid_data_format();
                 }
 
@@ -151,9 +151,9 @@ static ADDRESSINGS get_addressing_method(int valid_addressings[], char *var, int
         addressing_type = RELATIVE_ADDRESSING;
     else if (reg_idx)
         addressing_type = IMMEDIATE_REGISTER_ADDRESSING;
-    else if (var)
+    else
         addressing_type = DIRECT_ADDRESSING;
-
+        
     for (; i < 3; i++)
     {
         /* check if addressing method is valid for the operation type */
@@ -180,9 +180,11 @@ static word create_word(commands command)
     /* create a word of the data */
     wr.opcode = command.op.opcode;
     wr.origin_register = get_register_val(reg_origin_idx);
-    wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var1, reg_origin_idx);
-    wr.dest_addressing = get_addressing_method(command.op.legal_dest_addressing, command.var2, reg_dest_idx);
+    if (command.var1)
+        wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var1, reg_origin_idx);
     wr.dest_register = get_register_val(reg_dest_idx);
+    if (command.var2)
+        wr.dest_addressing = get_addressing_method(command.op.legal_dest_addressing, command.var2, reg_dest_idx);
     wr.funct = command.op.funct;
     wr.a = 1;
     wr.e = 0;

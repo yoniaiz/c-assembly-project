@@ -3,21 +3,21 @@
 #define CONVER_BIT_FIELD_TO_UNSIGNED_INT(BF) (unsigned int *)(&BF)
 #define APPEND_DATA_TO_HEX_CONVERTION(ADDRESS_STR, DATA_ADDRESS, MAIN, DATA, STR_COUNT) \
     sprintf(ADDRESS_STR, "%d", DATA_ADDRESS);                                           \
-    COPY_STRING_BY_CHAR(MAIN, ADDRESS_STR, STR_COUNT);                                  \
+    COPY_STRING_BY_CHAR(MAIN, num_to_six_chars(ADDRESS_STR), STR_COUNT);                \
     MAIN[STR_COUNT++] = '\t';                                                           \
     COPY_STRING_BY_CHAR(MAIN, DATA, STR_COUNT);                                         \
     MAIN[STR_COUNT++] = '\n';
-#define ADD_LABEL_WITH_ADDRESS(STR, STR_COUNT, LABEL, ADDRESS) \
-    {                                                          \
-        char *address = (char *)malloc(sizeof(char) * 6);      \
-        if (!address)                                          \
-            memory_allocation_fail();                          \
-        COPY_STRING_BY_CHAR(STR, LABEL, STR_COUNT);            \
-        STR[STR_COUNT++] = '\t';                               \
-        sprintf(address, "%d", ADDRESS);                       \
-        COPY_STRING_BY_CHAR(STR, address, STR_COUNT);          \
-        STR[STR_COUNT++] = '\n';                               \
-        free(address);                                         \
+#define ADD_LABEL_WITH_ADDRESS(STR, STR_COUNT, LABEL, ADDRESS)          \
+    {                                                                   \
+        char *address = (char *)malloc(sizeof(char) * 6);               \
+        if (!address)                                                   \
+            memory_allocation_fail();                                   \
+        COPY_STRING_BY_CHAR(STR, LABEL, STR_COUNT);                     \
+        STR[STR_COUNT++] = '\t';                                        \
+        sprintf(address, "%d", ADDRESS);                                \
+        COPY_STRING_BY_CHAR(STR, num_to_six_chars(address), STR_COUNT); \
+        STR[STR_COUNT++] = '\n';                                        \
+        free(address);                                                  \
     }
 
 #define MAX_LABEL_LENGTH 31
@@ -323,7 +323,7 @@ char *create_object_file_str(memory_row *memory, data_row *data)
                 APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_origin_data.address, str, extra_data_data_to_hex(memory[j].extra_origin_data), str_count);
             }
 
-            if (memory[j].extra_dest_data.address && (memory[j].extra_origin_data.data || memory[j].extra_origin_data.e))
+            if (memory[j].extra_dest_data.address && (memory[j].extra_dest_data.data || memory[j].extra_dest_data.e))
             {
                 /* append destination extra data */
                 APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_dest_data.address, str, extra_data_data_to_hex(memory[j].extra_dest_data), str_count);
