@@ -13,7 +13,7 @@ static void twoLoopsAlgorithm(commands *cmd)
     first_loop(cmd, &data, &memory, &symbol_table);
     second_loop(memory, symbol_table);
     free(cmd);
-    return;
+
     ofs.externalF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
     ofs.entryF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
 

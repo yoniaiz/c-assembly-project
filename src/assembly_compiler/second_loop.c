@@ -17,6 +17,7 @@ static int handle_relative_addressing_extra_data(char *var, int address, symbol_
     int i = 0;
     while (symbol_table[i].label)
     {
+        /*if variable withoud & exists in the symbol table sub the current address with the address found in the table */
         if (COMP_STRING(symbol_table[i].label, (var + 1)))
             return (symbol_table[i].address - address);
         i++;
