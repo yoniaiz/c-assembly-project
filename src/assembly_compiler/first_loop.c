@@ -67,6 +67,7 @@ static void add_instroction_to_data(commands command, data_row **data)
                 if (i == 0 || i == (strlen(command.var1) - 1) || command.var1[i + 1] == ',')
                     invalid_data_format();
 
+                /* reset string and start adding to new array index */
                 numstrlen = 0;
                 strcpy(numstr, "");
                 numbers_count++;
@@ -76,12 +77,14 @@ static void add_instroction_to_data(commands command, data_row **data)
                 numstr = (char *)realloc(numstr, sizeof(char) * (++numstrlen));
                 if (!numstr)
                     memory_allocation_fail();
+                /* copy string if not "," */
                 numstr[numstrlen - 1] = command.var1[i];
             }
 
             number = atoi(numstr);
             if (number)
             {
+                /*if is a number add to array at current index */
                 numbers[numbers_count] = (number);
             }
         }
@@ -110,6 +113,7 @@ static void add_instroction_to_data(commands command, data_row **data)
 
         if (numbers_count == 0)
         {
+            /*if is a single number */
             (*data)[dc].address = dc;
             (*data)[dc].data = numbers[0];
 
@@ -119,6 +123,8 @@ static void add_instroction_to_data(commands command, data_row **data)
         {
             for (i = 0; i <= numbers_count; i++)
             {
+
+                /* copy all data in the array to the data array */
                 (*data)[dc].address = dc;
                 (*data)[dc].data = numbers[i];
                 if (i != 0)
@@ -148,6 +154,7 @@ static ADDRESSINGS get_addressing_method(int valid_addressings[], char *var, int
 
     for (; i < 3; i++)
     {
+        /* check if addressing method is valid for the operation type */
         if (valid_addressings[i] == addressing_type)
             valid_addressing = TRUE;
     }
@@ -160,6 +167,7 @@ static ADDRESSINGS get_addressing_method(int valid_addressings[], char *var, int
 
 static int get_register_val(int reg_idx)
 {
+    /* get register id */
     return reg_idx ? registers[reg_idx - 1].id : 0;
 }
 
@@ -167,7 +175,7 @@ static word create_word(commands command)
 {
     int reg_origin_idx = get_register(command.var1), reg_dest_idx = get_register(command.var2);
     word wr;
-
+    /* create a word of the data */
     wr.opcode = command.op.opcode;
     wr.origin_register = get_register_val(reg_origin_idx);
     wr.origin_addressing = get_addressing_method(command.op.legal_origin_addressing, command.var1, reg_origin_idx);
@@ -186,6 +194,7 @@ static extra_data update_extra_data(ADDRESSINGS addressing, char *var)
     ed.data = 0;
     if ((addressing != IMMEDIATE_REGISTER_ADDRESSING) && var)
     {
+        /* if addressing type is immediate then copy string from index 1 to skip '#' */
         if (addressing == IMMEDIATE_ADDRESSING)
             ed.data = (atoi(++var));
 
@@ -207,6 +216,7 @@ static void add_operation_to_memory(commands command, memory_row **memory)
     if (!*memory)
         memory_allocation_fail();
 
+    /* and new operation to memory */
     (*memory)[current_idx].address = ic++;
     (*memory)[current_idx].cmd = command;
     (*memory)[current_idx].wr = create_word(command);
@@ -246,6 +256,7 @@ void first_loop(
 
             if (cmd[i].label || is_extern)
             {
+                /* if command has a label add to symbols table */
                 check_if_symbol_not_exists(symbol_table, cmd[i].label, symbols_length);
                 add_to_symbol_table(cmd[i], symbol_table, symbols_length, is_extern);
                 symbols_length++;
@@ -255,14 +266,10 @@ void first_loop(
             {
                 add_operation_to_memory(cmd[i], memory);
             }
-            else
+            else if (cmd[i].var1 && !is_extern)
             {
-                /* handel instruction */
-                if (cmd[i].var1 && !is_extern)
-                {
-                    /* handle data and string types  */
-                    add_instroction_to_data(cmd[i], data);
-                }
+                /* handle data and string types  */
+                add_instroction_to_data(cmd[i], data);
             }
         }
 
@@ -271,6 +278,7 @@ void first_loop(
 
     for (i = 0; i < dc; i++)
     {
+        /* update data address to be after all commands */
         (*data)[i].address += ic;
     }
 
@@ -279,10 +287,12 @@ void first_loop(
         (*symbol_table)[i].is_entry = FALSE;
         if ((*symbol_table)[i].command_type == INSTRACTION && !(*symbol_table)[i].is_extern)
         {
+            /* update addresses in symbols table expect extern */
             (*symbol_table)[i].address += ic;
         }
         for (j = 0; j < entries_count; j++)
         {
+            /* if found in entry array set is_entry flag to TRUE */
             if (COMP_STRING((*symbol_table)[i].label, entries[j]))
             {
                 (*symbol_table)[i].is_entry = TRUE;

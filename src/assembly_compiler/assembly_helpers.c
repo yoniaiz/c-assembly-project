@@ -39,119 +39,28 @@ static int get_operation_from_operations(char *opname)
     return -1;
 }
 
-int get_register(char *var)
-{
-    int i;
-    char regstr[2];
-    regstr[0] = 'r';
-
-    if (!var)
-        return FALSE;
-
-    for (i = 1; i < REGISTERS_AMOUNT + 1; i++)
-    {
-        regstr[1] = i + '0';
-        if (COMP_STRING(regstr, var))
-            return i;
-    }
-
-    return FALSE;
-}
-
-char *get_label(char *str)
-{
-    char *label = NULL;
-    int i = 0;
-
-    while (str[i] && str[i] != ':' && i != MAX_LABEL_LENGTH)
-    {
-        /* copy characters to and of str or char = ":" (and of label) of index = 31 (max char length) */
-        label = realloc(label, sizeof(char) * ((i) + 1));
-        if (!label)
-            memory_allocation_fail();
-
-        label[i] = str[i];
-        i++;
-    }
-
-    if (str[i] != ':' || i == MAX_LABEL_LENGTH)
-    {
-        /* label not found free space */
-        free(label);
-    }
-    else
-    {
-        /* last string char 0 */
-        label = realloc(label, sizeof(char) * (i + 1));
-        if (!label)
-            memory_allocation_fail();
-
-        label[i] = 0;
-    }
-
-    return label;
-}
-
 static int is_valid_instraction(char *str)
 {
     return COMP_STRING(str, DATA) || COMP_STRING(str, STRING) || COMP_STRING(str, EXTERN) || COMP_STRING(str, ENTRY);
 }
 
-void get_command(char *str, commands *cmd)
+static char *hex_to_six_chars(char *hex)
 {
-    int op_index, i = 0;
-    /* check if the command starts with '.' to know its an instruction */
-    int is_instruction = str[i] == '.';
-    char *opname = (char *)malloc(sizeof(char) * strlen(str));
-    if (!opname)
-        memory_allocation_fail();
-
-    COPY_STRING_BY_CHAR(opname, str, i);
-    opname[i] = 0;
-
-    op_index = get_operation_from_operations(opname);
-    if (op_index > -1)
+    int i;
+    char *str = (char *)malloc(sizeof(char) * MAX_HEX_SIZE);
+    for (i = 0; i < MAX_HEX_SIZE; i++)
     {
-        /* operation found. assign to object and set object type to EXECUTE  */
-        cmd->op = operations[op_index];
-        cmd->command_type = EXECUTE;
+        if (i < strlen(hex))
+        {
+            str[MAX_HEX_SIZE - 1 - i] = hex[strlen(hex) - 1 - i];
+        }
+        else
+        {
+            str[MAX_HEX_SIZE - 1 - i] = '0';
+        }
     }
-    else if (is_valid_instraction(opname))
-    {
-        cmd->instruction = (char *)malloc(sizeof(char) * i);
-        if (!cmd->instruction)
-            memory_allocation_fail();
-
-        strcpy(cmd->instruction, opname);
-        cmd->command_type = INSTRACTION;
-    }
-    else
-    {
-        /* if command is not valid */
-        invalid_command(is_instruction);
-    }
-    free(opname);
-}
-
-char *get_variable(char *str, int first_var)
-{
-    int i = 0;
-    char *var = (char *)malloc(sizeof(char) * strlen(str));
-    if (!var)
-        memory_allocation_fail();
-
-    COPY_STRING_BY_CHAR(var, str, i);
-
-    if (first_var && (var[i - 1] == ','))
-    {
-        var[i - 1] = 0;
-    }
-    else
-    {
-        var[i] = 0;
-    }
-
-    return var;
+    str[i + 1] = 0;
+    return str;
 }
 
 commands extract_command_data(char **str)
@@ -227,25 +136,6 @@ commands extract_command_data(char **str)
     return command;
 }
 
-static char *hex_to_six_chars(char *hex)
-{
-    int i;
-    char *str = (char *)malloc(sizeof(char) * MAX_HEX_SIZE);
-    for (i = 0; i < MAX_HEX_SIZE; i++)
-    {
-        if (i < strlen(hex))
-        {
-            str[MAX_HEX_SIZE - 1 - i] = hex[strlen(hex) - 1 - i];
-        }
-        else
-        {
-            str[MAX_HEX_SIZE - 1 - i] = '0';
-        }
-    }
-    str[i + 1] = 0;
-    return str;
-}
-
 static char *extra_data_data_to_hex(extra_data data)
 {
     int num = data.data;
@@ -276,6 +166,116 @@ static char *extra_data_data_to_hex(extra_data data)
 
     sprintf(hex, "%X", num);
     return hex_to_six_chars(hex);
+}
+
+int get_register(char *var)
+{
+    int i;
+    char regstr[2];
+    regstr[0] = 'r';
+
+    if (!var)
+        return FALSE;
+
+    for (i = 1; i < REGISTERS_AMOUNT + 1; i++)
+    {
+        regstr[1] = i + '0';
+        if (COMP_STRING(regstr, var))
+            return i;
+    }
+
+    return FALSE;
+}
+
+char *get_label(char *str)
+{
+    char *label = NULL;
+    int i = 0;
+
+    while (str[i] && str[i] != ':' && i != MAX_LABEL_LENGTH)
+    {
+        /* copy characters to and of str or char = ":" (and of label) of index = 31 (max char length) */
+        label = realloc(label, sizeof(char) * ((i) + 1));
+        if (!label)
+            memory_allocation_fail();
+
+        label[i] = str[i];
+        i++;
+    }
+
+    if (str[i] != ':' || i == MAX_LABEL_LENGTH)
+    {
+        /* label not found free space */
+        free(label);
+    }
+    else
+    {
+        /* last string char 0 */
+        label = realloc(label, sizeof(char) * (i + 1));
+        if (!label)
+            memory_allocation_fail();
+
+        label[i] = 0;
+    }
+
+    return label;
+}
+
+void get_command(char *str, commands *cmd)
+{
+    int op_index, i = 0;
+    /* check if the command starts with '.' to know its an instruction */
+    int is_instruction = str[i] == '.';
+    char *opname = (char *)malloc(sizeof(char) * strlen(str));
+    if (!opname)
+        memory_allocation_fail();
+
+    COPY_STRING_BY_CHAR(opname, str, i);
+    opname[i] = 0;
+
+    op_index = get_operation_from_operations(opname);
+    if (op_index > -1)
+    {
+        /* operation found. assign to object and set object type to EXECUTE  */
+        cmd->op = operations[op_index];
+        cmd->command_type = EXECUTE;
+    }
+    else if (is_valid_instraction(opname))
+    {
+        cmd->instruction = (char *)malloc(sizeof(char) * i);
+        if (!cmd->instruction)
+            memory_allocation_fail();
+
+        strcpy(cmd->instruction, opname);
+        cmd->command_type = INSTRACTION;
+    }
+    else
+    {
+        /* if command is not valid */
+        invalid_command(is_instruction);
+    }
+    free(opname);
+}
+
+char *get_variable(char *str, int first_var)
+{
+    int i = 0;
+    char *var = (char *)malloc(sizeof(char) * strlen(str));
+    if (!var)
+        memory_allocation_fail();
+
+    COPY_STRING_BY_CHAR(var, str, i);
+
+    if (first_var && (var[i - 1] == ','))
+    {
+        var[i - 1] = 0;
+    }
+    else
+    {
+        var[i] = 0;
+    }
+
+    return var;
 }
 
 char *create_object_file_str(memory_row *memory, data_row *data)

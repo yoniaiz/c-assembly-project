@@ -32,6 +32,7 @@ static int handle_direct_addressing_extra_data(char *var, symbol_row *symbol_tab
     int i = 0;
     while (symbol_table[i].label)
     {
+        /* if label fount return address */
         if (COMP_STRING(symbol_table[i].label, var))
             return symbol_table[i].address;
         i++;

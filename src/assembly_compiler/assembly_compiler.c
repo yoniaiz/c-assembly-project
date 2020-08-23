@@ -14,6 +14,7 @@ static void twoLoopsAlgorithm(commands *cmd)
     second_loop(memory, symbol_table);
     free(cmd);
 
+    /* update external and entry outputs to files */
     ofs.externalF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
     ofs.entryF = (char *)malloc(sizeof(char) * (calculate_total_size_object_file_str_size() / 2));
 
@@ -32,6 +33,7 @@ static void twoLoopsAlgorithm(commands *cmd)
     strcpy(ofs.objectF, create_object_file_str(memory, data));
     free(data);
     free(memory);
+
     writeFiles(ofs);
 }
 
