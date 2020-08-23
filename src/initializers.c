@@ -46,7 +46,6 @@ static void initialize_registers()
 
 static void initialize_operations()
 {
-    int i = 0;
     /* all addressing methods */
     ADDRESSINGS di[3] = {DIRECT_ADDRESSING, IMMEDIATE_REGISTER_ADDRESSING, -1};
     ADDRESSINGS dii[3] = {DIRECT_ADDRESSING, IMMEDIATE_ADDRESSING, IMMEDIATE_REGISTER_ADDRESSING};

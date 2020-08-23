@@ -1,4 +1,7 @@
 #include "header.h"
+#define FILE_NAME_SIZE 20
+#define FILE_NAME_WITH_TYPE_SIZE 24
+
 static void writeFile(char *filename, char *filecontent)
 {
     FILE *f;
@@ -14,7 +17,7 @@ static void writeFile(char *filename, char *filecontent)
 
 static char *filename(char *filename)
 {
-    static char name[20];
+    static char name[FILE_NAME_SIZE];
     if (strlen(filename))
         strcpy(name, filename);
     return name;
@@ -23,9 +26,9 @@ static char *filename(char *filename)
 void read_file(char *path, char **content)
 {
     FILE *assembly;
-    char name[20];
+    char name[FILE_NAME_SIZE];
     long length;
-    
+
     strcpy(name, filename(path));
     if (!(assembly = fopen(strcat(name, ".as"), "r")))
     {
@@ -37,7 +40,7 @@ void read_file(char *path, char **content)
     length = ftell(assembly);
     fseek(assembly, 0, SEEK_SET);
 
-    *content = (char*)calloc(length, sizeof(char));	
+    *content = (char *)calloc(length, sizeof(char));
     if (!*content)
     {
         memory_allocation_fail();
@@ -50,25 +53,24 @@ void read_file(char *path, char **content)
 
 void writeFiles(output_files_strs ofs)
 {
-    char fileobj[24];
-    char fileext[24];
-    char fileent[24];
-
     if (strlen(ofs.objectF))
     {
-        strcpy(fileobj, filename(""));
-        writeFile(strcat(fileobj, ".obj"), ofs.objectF);
+        char file[FILE_NAME_WITH_TYPE_SIZE];
+        strcpy(file, filename(""));
+        writeFile(strcat(file, ".obj"), ofs.objectF);
     }
 
     if (strlen(ofs.externalF))
     {
-        strcpy(fileext, filename(""));
-        writeFile(strcat(fileext, ".ext"), ofs.externalF);
+        char file[FILE_NAME_WITH_TYPE_SIZE];
+        strcpy(file, filename(""));
+        writeFile(strcat(file, ".ext"), ofs.externalF);
     }
     if (strlen(ofs.entryF))
     {
-        strcpy(fileent, filename(""));
-        writeFile(strcat(fileent, ".ent"), ofs.entryF);
+        char file[FILE_NAME_WITH_TYPE_SIZE];
+        strcpy(file, filename(""));
+        writeFile(strcat(file, ".ent"), ofs.entryF);
     }
 
     free(ofs.entryF);

@@ -11,6 +11,7 @@ static void check_if_symbol_not_exists(symbol_row **symbol_table, char *label, i
     if (symbols_len == 0)
         return;
 
+    /* if symbol exist throw error */
     for (; i < symbols_len; i++)
         if (COMP_STRING(label, (*symbol_table)[i].label))
             symbol_fail(label);
@@ -22,6 +23,7 @@ static void add_to_symbol_table(commands command, symbol_row **symbol_table, int
     if (!*symbol_table)
         memory_allocation_fail();
 
+    /* add data to new symbol table row and handle if data is extern case */
     (*symbol_table)[symbols_len].label = (char *)malloc(sizeof(char) * strlen(is_extern ? command.var1 : command.label));
     strcpy((*symbol_table)[symbols_len].label, is_extern ? command.var1 : command.label);
     (*symbol_table)[symbols_len].address = is_extern ? 0 : command.command_type ? ic : dc;
@@ -31,7 +33,7 @@ static void add_to_symbol_table(commands command, symbol_row **symbol_table, int
 
 static void add_instroction_to_data(commands command, data_row **data)
 {
-    int i = 0, numstrlen = 0, isstring = FALSE, isdata = FALSE, number = 0, numbers_count = 0;
+    int i = 0, numstrlen = 0, is_string = FALSE, is_data = FALSE, number = 0, numbers_count = 0;
     char *numstr = (char *)malloc(sizeof(char) * 1);
     int numbers[10];
 
@@ -41,23 +43,30 @@ static void add_instroction_to_data(commands command, data_row **data)
 
         if (COMP_STRING(command.instruction, STRING))
         {
-            isstring = TRUE;
+            /* if instrucation type is .string */
+            is_string = TRUE;
             if (command.var1[i] != '"')
             {
+                /* get all string data except '"' */
                 *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + 1) * 100);
                 if (!*data)
                     memory_allocation_fail();
 
                 (*data)[dc].address = dc;
+                /* cast char to ascii */
                 (*data)[dc].data = (int)command.var1[i];
                 dc++;
             }
         }
         else if (COMP_STRING(command.instruction, DATA))
         {
-            isdata = TRUE;
+            /* case insruction type is .data */
+            is_data = TRUE;
             if (command.var1[i] == ',')
             {
+                if (i == 0 || i == (strlen(command.var1) - 1) || command.var1[i + 1] == ',')
+                    invalid_data_format();
+
                 numstrlen = 0;
                 strcpy(numstr, "");
                 numbers_count++;
@@ -65,6 +74,8 @@ static void add_instroction_to_data(commands command, data_row **data)
             else
             {
                 numstr = (char *)realloc(numstr, sizeof(char) * (++numstrlen));
+                if (!numstr)
+                    memory_allocation_fail();
                 numstr[numstrlen - 1] = command.var1[i];
             }
 
@@ -78,7 +89,7 @@ static void add_instroction_to_data(commands command, data_row **data)
         i++;
     }
 
-    if (isstring)
+    if (is_string)
     {
         /* last char  in a string is /0 */
         *data = (data_row *)realloc(*data, sizeof(data_row) * (dc));
@@ -90,7 +101,7 @@ static void add_instroction_to_data(commands command, data_row **data)
         dc++;
     }
 
-    else if (isdata)
+    else if (is_data)
     {
 
         *data = (data_row *)realloc(*data, sizeof(data_row) * (dc + (numbers_count + 1) * 100));

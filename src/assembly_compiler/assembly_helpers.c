@@ -189,6 +189,7 @@ commands extract_command_data(char **str)
     {
         if (!command.command_type)
         {
+            /* case command is instuction */
             command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
             if (!command.var1)
                 memory_allocation_fail();
@@ -197,6 +198,7 @@ commands extract_command_data(char **str)
         }
         else if (str[index + 1])
         {
+            /* case there is two variables */
             /* get first var */
             command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
             if (!command.var1)
@@ -213,6 +215,7 @@ commands extract_command_data(char **str)
         }
         else
         {
+            /* case only one var set it as direct register for later use */
             command.var2 = (char *)malloc(sizeof(char) * strlen(str[index]));
             if (!command.var2)
                 memory_allocation_fail();
@@ -223,12 +226,6 @@ commands extract_command_data(char **str)
 
     return command;
 }
-
-typedef struct extra_data_helper
-{
-    unsigned int type : 3;
-    unsigned int data : MAX_BIT_SIZE;
-} extra_data_helper;
 
 static char *hex_to_six_chars(char *hex)
 {
@@ -248,6 +245,7 @@ static char *hex_to_six_chars(char *hex)
     str[i + 1] = 0;
     return str;
 }
+
 static char *extra_data_data_to_hex(extra_data data)
 {
     int num = data.data;
@@ -257,18 +255,21 @@ static char *extra_data_data_to_hex(extra_data data)
 
     if (data.a)
     {
+        /* add 0 to binary number then add 1 to number and then and two more 0 */
         num *= 2;
         num += 1;
         num *= 4;
     }
     else if (data.r)
     {
+        /* add two 0 to binary then add 1 to number and then add another 0 to binary */
         num *= 4;
         num += 1;
         num *= 2;
     }
     else
     {
+        /* add three 0 to binary and then add 1 to number */
         num *= 8;
         num += 1;
     }
@@ -276,6 +277,7 @@ static char *extra_data_data_to_hex(extra_data data)
     sprintf(hex, "%X", num);
     return hex_to_six_chars(hex);
 }
+
 char *create_object_file_str(memory_row *memory, data_row *data)
 {
     int data_size = dc, str_count = 0, j;
@@ -285,6 +287,7 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     if (!str)
         memory_allocation_fail();
 
+    /* start: add total size and data size to string output */
     sprintf(data_size_str, "%d", data_size);
     sprintf(total_size_str, "%d", total_size);
 
@@ -295,21 +298,24 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     str[str_count++] = ' ';
     COPY_STRING_BY_CHAR(str, data_size_str, str_count);
     str[str_count++] = '\n';
-    str[str_count++] = '\n';
+    /* end: add total size and data size to string output */
 
     for (j = 0; j < (ic - IC_INIT); j++)
     {
         if (memory[j].address)
         {
+            /* append main address object with word */
             APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].address, str, word_to_hex(CONVER_BIT_FIELD_TO_UNSIGNED_INT(memory[j].wr)), str_count);
 
             if (memory[j].extra_origin_data.address && (memory[j].extra_origin_data.data || memory[j].extra_origin_data.e))
             {
+                /* append origin extra data */
                 APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_origin_data.address, str, extra_data_data_to_hex(memory[j].extra_origin_data), str_count);
             }
 
             if (memory[j].extra_dest_data.address && (memory[j].extra_origin_data.data || memory[j].extra_origin_data.e))
             {
+                /* append destination extra data */
                 APPEND_DATA_TO_HEX_CONVERTION(address, memory[j].extra_dest_data.address, str, extra_data_data_to_hex(memory[j].extra_dest_data), str_count);
             }
         }
@@ -317,6 +323,7 @@ char *create_object_file_str(memory_row *memory, data_row *data)
 
     for (j = 0; j < dc; j++)
     {
+        /* append all data to string */
         sprintf(hex, "%X", data[j].data);
         APPEND_DATA_TO_HEX_CONVERTION(address, data[j].address, str, hex_to_six_chars(hex), str_count);
     }
@@ -334,6 +341,8 @@ char *create_external_file_str(symbol_row *symbol_table, memory_row *memory_tabl
     {
         if (symbol_table[i].is_extern)
         {
+            /* if found in symbol table exten file find in memory command with the extern symbol label */
+            /* as variable and append data to string */
             for (j = 0; j < (ic - IC_INIT); j++)
             {
                 if (memory_table[j].cmd.var1 && COMP_STRING(memory_table[j].cmd.var1, symbol_table[i].label))
@@ -358,6 +367,7 @@ char *create_entry_file_str(symbol_row *symbol_table)
     int i = 0, str_count = 0;
     while (symbol_table[i].label)
     {
+        /* find entry data and append to str output */
         if (symbol_table[i].is_entry)
         {
             ADD_LABEL_WITH_ADDRESS(str, str_count, symbol_table[i].label, symbol_table[i].address);

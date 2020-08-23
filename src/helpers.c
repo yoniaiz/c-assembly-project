@@ -3,6 +3,7 @@ extern int ic;
 
 int calculate_total_size_object_file_str_size()
 {
+    /* one file line equals to 6 (hex number) * 2 (two numbers) + 1(Tab) * total length */
     return sizeof(char) * ((MAX_HEX_SIZE * 2 + 1) * (ic - IC_INIT) + 1);
 }
 
@@ -34,7 +35,7 @@ void split_content_by_enters_and_spaces(char *str, char ****lines)
     int i = 0, j = 0;
     char **inner = NULL;
     char **line = NULL;
-    
+
     /* spliting content by enters to array of string */
     split_input_by_symbol(str, &inner, "\n");
     while (inner[i])
@@ -61,10 +62,11 @@ void split_content_by_enters_and_spaces(char *str, char ****lines)
         i++;
     }
 
-    free(inner);
-    free(line);
     (*lines) = (char ***)realloc(*lines, sizeof(char **) * (i + 1));
     (*lines)[i] = NULL;
+
+    free(inner);
+    free(line);
 }
 
 char *word_to_hex(unsigned int *p)
@@ -79,6 +81,7 @@ char *word_to_hex(unsigned int *p)
 
     for (i = 0; i < (MAX_BIT_SIZE + 3); i++)
     {
+        /* add every for number to matrix line to simulat hex number */
         if (i != 0 && i % 4 == 0)
         {
             k = 3;
@@ -92,6 +95,7 @@ char *word_to_hex(unsigned int *p)
     {
         for (k = 3; k >= 0; k--)
         {
+            /* convert every four numbers to hex and add it to string */
             hex = (hex << 1) | bitsMatrix[i][k];
         }
         sprintf(hexstr, "%X", hex);

@@ -132,6 +132,7 @@ void file_fail();
 void entry_fail();
 void no_args_fail();
 void invalid_addressing();
+void invalid_data_format();
 void symbol_fail(char *label);
 void memory_allocation_fail();
 void data_not_found(char *data);

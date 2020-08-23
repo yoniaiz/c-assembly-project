@@ -9,6 +9,8 @@
 #define ENTRY_FAIL "Entry should have a variable!\n"
 #define SYMBOL_ERROR "You already declared a label named "
 #define INVALID_ADDRESSING "Invalid addressing accrued!\n"
+#define NOT_FOUND "Not found!\n"
+#define INVALID_DATA_FORMAT "Invalid data format!\n"
 
 void memory_allocation_fail()
 {
@@ -55,6 +57,12 @@ void invalid_addressing()
 
 void data_not_found(char *data)
 {
-    printf("%s Not found!\n", data);
+    printf("%s %s", data, NOT_FOUND);
+    exit(EXIT_FAILURE);
+}
+
+void invalid_data_format()
+{
+    printf(INVALID_DATA_FORMAT);
     exit(EXIT_FAILURE);
 }
