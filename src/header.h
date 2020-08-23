@@ -134,6 +134,7 @@ void no_args_fail();
 void invalid_addressing();
 void symbol_fail(char *label);
 void memory_allocation_fail();
+void data_not_found(char *data);
 void invalid_command(BOOLEAN is_instrucation);
 /* Assembly compiler */
 void complie_file_input_to_assembly(char ***lines);

@@ -52,3 +52,9 @@ void invalid_addressing()
     printf(INVALID_ADDRESSING);
     exit(EXIT_FAILURE);
 }
+
+void data_not_found(char *data)
+{
+    printf("%s Not found!\n", data);
+    exit(EXIT_FAILURE);
+}
