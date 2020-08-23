@@ -11,14 +11,14 @@ operation operations[OPERATIONS_LENGTH];
 
 int main(int argc, char *argv[])
 {
-    int i = 1;
+    int i;
     if (argc == 1)
     {
         no_args_fail();
     }
 
     initialize_prog();
-    for (; i < argc; i++)
+    for (i = 1; i < argc; i++)
     {
         /* initialize array of array of strings and data + memory count*/
         char ***lines = NULL;

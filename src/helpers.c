@@ -5,32 +5,6 @@ int calculate_total_size_object_file_str_size()
 {
     return sizeof(char) * ((MAX_HEX_SIZE * 2 + 1) * (ic - IC_INIT) + 1);
 }
-void remove_spaces(char *str_with_spaces)
-{
-    int length, i = 0, j = 0;
-    char *str_without_spaces;
-
-    length = strlen(str_with_spaces);
-    str_without_spaces = (char *)malloc(length + 1);
-    if (!str_without_spaces)
-    {
-        memory_allocation_fail();
-    }
-    while (*(str_with_spaces + i))
-    {
-        /* remove all white spaces from the string */
-        if (!(*(str_with_spaces + i) == ' '))
-        {
-            *(str_without_spaces + j) = *(str_with_spaces + i);
-            j++;
-        }
-        i++;
-    }
-    /* last string char 0 */
-    *(str_without_spaces + j) = 0;
-    /* update string after removing spaces */
-    strcpy(str_with_spaces, str_without_spaces);
-}
 
 void split_input_by_symbol(char *str, char ***lines, char *symbol)
 {
@@ -60,7 +34,7 @@ void split_content_by_enters_and_spaces(char *str, char ****lines)
     int i = 0, j = 0;
     char **inner = NULL;
     char **line = NULL;
-
+    
     /* spliting content by enters to array of string */
     split_input_by_symbol(str, &inner, "\n");
     while (inner[i])
@@ -87,6 +61,8 @@ void split_content_by_enters_and_spaces(char *str, char ****lines)
         i++;
     }
 
+    free(inner);
+    free(line);
     (*lines) = (char ***)realloc(*lines, sizeof(char **) * (i + 1));
     (*lines)[i] = NULL;
 }

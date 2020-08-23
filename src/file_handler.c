@@ -37,14 +37,14 @@ void read_file(char *path, char **content)
     length = ftell(assembly);
     fseek(assembly, 0, SEEK_SET);
 
-    *content = (char *)malloc(length * sizeof(char));
+    *content = (char*)calloc(length, sizeof(char));	
     if (!*content)
     {
         memory_allocation_fail();
     }
 
     /* copy file to string and close file */
-    fread(*content, 1, length, assembly);
+    fread(*content, sizeof(char), length, assembly);
     fclose(assembly);
 }
 
@@ -82,4 +82,5 @@ void parse_file_to_array_of_strings(char *path, char ****lines)
     char *content = NULL;
     read_file(path, &content);
     split_content_by_enters_and_spaces(content, lines);
+    free(content);
 }
