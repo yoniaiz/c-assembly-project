@@ -44,130 +44,6 @@ static int is_valid_instraction(char *str)
     return COMP_STRING(str, DATA) || COMP_STRING(str, STRING) || COMP_STRING(str, EXTERN) || COMP_STRING(str, ENTRY);
 }
 
-static char *hex_to_six_chars(char *hex)
-{
-    int i;
-    char *str = (char *)malloc(sizeof(char) * MAX_HEX_SIZE);
-    for (i = 0; i < MAX_HEX_SIZE; i++)
-    {
-        if (i < strlen(hex))
-        {
-            str[MAX_HEX_SIZE - 1 - i] = hex[strlen(hex) - 1 - i];
-        }
-        else
-        {
-            str[MAX_HEX_SIZE - 1 - i] = '0';
-        }
-    }
-    str[i + 1] = 0;
-    return str;
-}
-
-commands extract_command_data(char **str)
-{
-    commands command;
-    int index = 0;
-    char *label = (char *)malloc(sizeof(char) * MAX_LABEL_LENGTH);
-
-    /* initialize the struct */
-    command.instruction = (char *)malloc(sizeof(char) * 10);
-    command.op.opname = (char *)malloc(sizeof(char) * 10);
-    command.var1 = NULL;
-    command.var2 = NULL;
-
-    /* get label if exist from string and add to struct*/
-    strcpy(label, get_label(str[index]));
-    if (strlen(label))
-    {
-        index++;
-        command.label = (char *)malloc(sizeof(char) * index);
-        strcpy(command.label, label);
-    }
-    else
-    {
-        /* if no label reset the index */
-        command.label = NULL;
-        index = 0;
-    }
-
-    free(label);
-    /* get operation if exist from string and add to struct from last index */
-    get_command(str[index++], &command);
-
-    if (str[index])
-    {
-        if (!command.command_type)
-        {
-            /* case command is instuction */
-            command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
-            if (!command.var1)
-                memory_allocation_fail();
-
-            strcpy(command.var1, get_variable(str[index++], FALSE));
-        }
-        else if (str[index + 1])
-        {
-            /* case there is two variables */
-            /* get first var */
-            command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
-            if (!command.var1)
-                memory_allocation_fail();
-
-            strcpy(command.var1, get_variable(str[index++], TRUE));
-
-            /* copy var 2 */
-            command.var2 = (char *)malloc(sizeof(char) * strlen(str[index]));
-            if (!command.var2)
-                memory_allocation_fail();
-
-            strcpy(command.var2, get_variable(str[index], FALSE));
-        }
-        else
-        {
-            /* case only one var set it as direct register for later use */
-            command.var2 = (char *)malloc(sizeof(char) * strlen(str[index]));
-            if (!command.var2)
-                memory_allocation_fail();
-
-            strcpy(command.var2, get_variable(str[index], TRUE));
-        }
-    }
-
-    return command;
-}
-
-static char *extra_data_data_to_hex(extra_data data)
-{
-    int num = data.data;
-    char *hex = (char *)malloc(sizeof(char) * 10);
-    if (!hex)
-        memory_allocation_fail();
-
-    if (data.a)
-    {
-        /* add 0 to binary number then add 1 to number and then and two more 0 */
-        num *= 2;
-        num += 1;
-        num *= 4;
-    }
-    else if (data.r)
-    {
-        /* add two 0 to binary then add 1 to number and then add another 0 to binary */
-        num *= 4;
-        num += 1;
-        num *= 2;
-    }
-    else
-    {
-        /* add three 0 to binary and then add 1 to number */
-        num *= 8;
-        num += 1;
-    }
-
-    sprintf(hex, "%X", num);
-    return hex_to_six_chars(hex);
-}
-
 int get_register(char *var)
 {
     int i;
@@ -278,6 +154,140 @@ char *get_variable(char *str, int first_var)
     return var;
 }
 
+commands extract_command_data(char **str)
+{
+    commands command;
+    int index = 0;
+    char *label = (char *)malloc(sizeof(char) * MAX_LABEL_LENGTH);
+
+    /* initialize the struct */
+    command.instruction = (char *)malloc(sizeof(char) * 10);
+    command.op.opname = (char *)malloc(sizeof(char) * 10);
+    command.var1 = NULL;
+    command.var2 = NULL;
+
+    /* get label if exist from string and add to struct*/
+    strcpy(label, get_label(str[index]));
+    if (strlen(label))
+    {
+        index++;
+        command.label = (char *)malloc(sizeof(char) * index);
+        strcpy(command.label, label);
+    }
+    else
+    {
+        /* if no label reset the index */
+        command.label = NULL;
+        index = 0;
+    }
+
+    free(label);
+    /* get operation if exist from string and add to struct from last index */
+    get_command(str[index++], &command);
+
+    if (str[index])
+    {
+        if (!command.command_type)
+        {
+            char *concat_str = (char *)malloc(sizeof(char) * strlen(str[index]));
+            /* case command is instuction */
+            command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
+            if (!command.var1 || !concat_str)
+                memory_allocation_fail();
+
+            strcpy(concat_str, str[index]);
+
+            while (str[index + 1])
+            {
+                /* get all left variables */
+                strcat(concat_str, str[index + 1]);
+                index++;
+            }
+
+            strcpy(command.var1, get_variable(concat_str, FALSE));
+        }
+        else if (str[index + 1])
+        {
+            /* case there is two variables */
+            /* get first var */
+            command.var1 = (char *)malloc(sizeof(char) * strlen(str[index]));
+            if (!command.var1)
+                memory_allocation_fail();
+
+            strcpy(command.var1, get_variable(str[index++], TRUE));
+
+            /* copy var 2 */
+            command.var2 = (char *)malloc(sizeof(char) * strlen(str[index]));
+            if (!command.var2)
+                memory_allocation_fail();
+
+            strcpy(command.var2, get_variable(str[index], FALSE));
+        }
+        else
+        {
+            /* case only one var set it as direct register for later use */
+            command.var2 = (char *)malloc(sizeof(char) * strlen(str[index]));
+            if (!command.var2)
+                memory_allocation_fail();
+
+            strcpy(command.var2, get_variable(str[index], TRUE));
+        }
+    }
+
+    return command;
+}
+
+static char *num_to_six_chars(char *num)
+{
+    int i;
+    char *str = (char *)malloc(sizeof(char) * MAX_HEX_SIZE);
+    for (i = 0; i < MAX_HEX_SIZE; i++)
+    {
+        if (i < strlen(num))
+        {
+            str[MAX_HEX_SIZE - 1 - i] = num[strlen(num) - 1 - i];
+        }
+        else
+        {
+            str[MAX_HEX_SIZE - 1 - i] = '0';
+        }
+    }
+    str[i + 1] = 0;
+    return str;
+}
+
+static char *extra_data_data_to_hex(extra_data data)
+{
+    int num = data.data;
+    char *hex = (char *)malloc(sizeof(char) * 10);
+    if (!hex)
+        memory_allocation_fail();
+
+    if (data.a)
+    {
+        /* add 0 to binary number then add 1 to number and then and two more 0 */
+        num *= 2;
+        num += 1;
+        num *= 4;
+    }
+    else if (data.r)
+    {
+        /* add two 0 to binary then add 1 to number and then add another 0 to binary */
+        num *= 4;
+        num += 1;
+        num *= 2;
+    }
+    else
+    {
+        /* add three 0 to binary and then add 1 to number */
+        num *= 8;
+        num += 1;
+    }
+
+    sprintf(hex, "%X", num);
+    return num_to_six_chars(hex);
+}
+
 char *create_object_file_str(memory_row *memory, data_row *data)
 {
     int data_size = dc, str_count = 0, j;
@@ -325,7 +335,7 @@ char *create_object_file_str(memory_row *memory, data_row *data)
     {
         /* append all data to string */
         sprintf(hex, "%X", data[j].data);
-        APPEND_DATA_TO_HEX_CONVERTION(address, data[j].address, str, hex_to_six_chars(hex), str_count);
+        APPEND_DATA_TO_HEX_CONVERTION(address, data[j].address, str, num_to_six_chars(hex), str_count);
     }
 
     str[str_count] = 0;

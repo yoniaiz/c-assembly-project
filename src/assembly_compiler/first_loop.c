@@ -64,8 +64,10 @@ static void add_instroction_to_data(commands command, data_row **data)
             is_data = TRUE;
             if (command.var1[i] == ',')
             {
-                if (i == 0 || i == (strlen(command.var1) - 1) || command.var1[i + 1] == ',')
+                if (i == 0 || i == (strlen(command.var1) - 1) || command.var1[i + 1] == ','){
+                    printf("%s\n", command.var1);
                     invalid_data_format();
+                }
 
                 /* reset string and start adding to new array index */
                 numstrlen = 0;
